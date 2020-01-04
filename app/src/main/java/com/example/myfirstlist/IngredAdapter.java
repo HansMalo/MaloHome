@@ -10,13 +10,18 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredViewHolder>{
     private static final String TAG = IngredAdapter.class.getSimpleName();
+    private List<IngModel> mIngredList;
+    //onClickListener to make it easy for Activity to interface with RecyclerView
     final private ListItemClickListener mOnClickListener;
 
     private static int viewHolderCount;
 
-    private int mNumberItems;
+    //private int mNumberItems;
 //interface for onListItemClick handling
     public interface ListItemClickListener {
         void onListItemClick(int clickedItemIndex);
@@ -24,7 +29,8 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
     }
 /* Constructor for IngredAdapter that accepts a number of items to display and the specification
      * for the ListItemClickListener. */
-    public IngredAdapter(ListItemClickListener mOnClickListener) {
+    public IngredAdapter(ListItemClickListener mOnClickListener,List<IngModel> IngredList) {
+        mIngredList=IngredList;
         this.mOnClickListener = mOnClickListener;
         viewHolderCount=0;
     }
@@ -42,8 +48,10 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
      * @return A new NumberViewHolder that holds the View for each list item
      */
 
+
     @Override
     public IngredViewHolder onCreateViewHolder(ViewGroup viewGroup,int viewType){
+
         Context context=viewGroup.getContext();
         int layoutIdForListItem=R.layout.ing_list_item;
         LayoutInflater inflater=LayoutInflater.from(context);
@@ -51,6 +59,8 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup,shouldAttachToParentImmediately);
         IngredViewHolder viewHolder=new IngredViewHolder(view);
+
+        viewHolder.getItemId().setText
 
 
 
@@ -115,15 +125,36 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
             ingView.setOnClickListener(this);
         }
 
-        /**
+        public void setIngredient(Context context, View MainActivity, IngModel mIngModel){
+            /*float Amount=mIngModel.getAmount();
+            String Unit=mIngModel.getUnit();
+            String Name=mIngModel.getName();
+            String Category=mIngModel.getCategory(); */
+            StringBuilder builder=new StringBuilder(mIngModel.getName());
+            builder.append(Float.toString(mIngModel.getAmount()));
+            builder.append(mIngModel.getUnit());
+            ingView.setText(builder);
+
+            //not done yet
+            /*itemView.setOnClickListener(view-> {
+
+            });
+
+
+             */
+
+        }
+
+        /*
          * A method we wrote for convenience. This method will take an integer as input and
          * use that integer to display the appropriate text within a list item.
          * @param listIndex Position of the item in the list
-         */
+         *
 
         void bind(int listIndex) {
             ingView.setText(String.valueOf(listIndex));
         }
+        */
 
         // COMPLETED (6) Override onClick, passing the clicked item's position (getAdapterPosition()) to mOnClickListener via its onListItemClick method
         /**
