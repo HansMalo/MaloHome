@@ -7,10 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements IngredAdapter.ListItemClickListener {
     private IngredAdapter mAdapter;
     private RecyclerView mIngredList;
     private Toast mToast;
+    private List<IngModel> IngredList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredList.setLayoutManager(layoutManager);
 
-        mAdapter=new IngredAdapter(this);
+        mAdapter=new IngredAdapter(this,IngredList);
         mIngredList.setAdapter((mAdapter));
 
     }
