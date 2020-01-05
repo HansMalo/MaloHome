@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,17 +24,20 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
 
     private static int viewHolderCount;
 
-    private int mNumberItems;
+    //private int mNumberItems;
 //interface for onListItemClick handling
-    public interface ListItemClickListener {
-        void onListItemClick(int clickedItemIndex);
 
+   public interface ListItemClickListener {
+        void onListItemClick(int clickedItemIndex);
     }
+
 /* Constructor for IngredAdapter that accepts a number of items to display and the specification
-     * for the ListItemClickListener. */
-    public IngredAdapter(List<IngModel> IngredList,ListItemClickListener mOnClickListener) {
+     * for the ListItemClickListener.
+     * @param List<IngModel> List with IngredientsModel objects as described in the IngModel class
+     * @param listener Listener for list item clicks */
+    public IngredAdapter(List<IngModel> IngredList, ListItemClickListener listener) {
         this.mIngredList=IngredList;
-        this.mOnClickListener = mOnClickListener;
+        mOnClickListener=listener;
         viewHolderCount=0;
     }
 
@@ -54,7 +58,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
     @Override
     public IngredViewHolder onCreateViewHolder(ViewGroup parent,int viewType){
         Context context=parent.getContext();
-        //int layoutIdForListItem=R.layout.ing_list_item;
+        int layoutIdForListItem=R.layout.ing_list_item;
         LayoutInflater inflater=LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
@@ -85,7 +89,6 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
         StringBuilder builder=new StringBuilder(mIngredList.get(position).getName());
         builder.append(spc);
         builder.append(mIngredList.get(position).getAmount());
-
         builder.append(mIngredList.get(position).getUnit());
         holder.ingView.setText(builder);
     }
