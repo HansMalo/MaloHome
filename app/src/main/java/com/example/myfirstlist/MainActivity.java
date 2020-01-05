@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Whitelist;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,20 +149,24 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
             ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
             String cb=item.getText().toString();
-            String newcb= Jsoup.parse(cb).text();
+            String newcb= Jsoup.clean(cb, Whitelist.none());
 
             Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
             Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
             // This disables the paste menu item, since the clipboard has data but it is not plain text
             return;
         } else {
-
+            Document.OutputSettings settings= new Document.OutputSettings();
+            settings.prettyPrint(false);
             // This enables the paste menu item, since the clipboard contains plain text.
-            ClipData.Item item1 = clipboard.getPrimaryClip().getItemAt(0);
-            String mitem2=item1.getText().toString();
-            String newcb= Jsoup.parse(mitem2).text();
-            Log.d("DataFromClipboard","receiveDatafrom CB performed " + mitem2);
-            Log.d("DataFromClipboard","receiveDatafrom CB performed " + newcb);
+            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+            CharSequence cb=item.getText();
+            String newcb= Jsoup.clean((String)cb,"", Whitelist.none(),settings);
+            String[] allcb = newcb.split("\n");
+
+            Log.d("DataFromClipboard","receiveDatafrom CB performed \n" + cb);
+            Log.d("DataFromClipboard","receiveDatafrom newCB performed \n" + allcb[1]+allcb[2]);
+
             return;
         }
 
