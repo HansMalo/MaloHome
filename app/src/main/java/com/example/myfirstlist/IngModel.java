@@ -6,6 +6,7 @@ public class IngModel {
     private float Amount;
     private String Category;
 
+
     public IngModel(String name, float amount, String unit) {
         Name = name;
         Unit = unit;
