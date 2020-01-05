@@ -42,7 +42,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
      * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
      *
-     * @param ViewGroup The ViewGroup that these ViewHolders are contained within.
+     * @param parent The ViewGroup that these ViewHolders are contained within.
      * @param viewType  If your RecyclerView has more than one type of item (which ours doesn't) you
      *                  can use this viewType integer to provide a different layout. See
      *                  {@link androidx.recyclerview.widget.RecyclerView.Adapter#getItemViewType(int)}
@@ -81,7 +81,13 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
     @Override
     public void onBindViewHolder(IngredViewHolder holder, int position) {
         Log.d(TAG, "#" + position);
-        holder.ingView.setText(mIngredList.get(position).getName());
+        String spc=" ";
+        StringBuilder builder=new StringBuilder(mIngredList.get(position).getName());
+        builder.append(spc);
+        builder.append(mIngredList.get(position).getAmount());
+
+        builder.append(mIngredList.get(position).getUnit());
+        holder.ingView.setText(builder);
     }
 
 
@@ -110,7 +116,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
          * TextViews and set an onClickListener to listen for clicks. Those will be handled in the
          * onClick method below.
-         * @param View The View that you inflated in
+         * @param view The View that you inflated in
          *                 {@link IngredAdapter#onCreateViewHolder(ViewGroup, int)}
          */
 
