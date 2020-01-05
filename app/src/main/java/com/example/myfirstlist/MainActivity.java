@@ -83,9 +83,9 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         Log.d("Button Click", "Button was clicked");
         String input=mInputForm.getText().toString();
         mInputForm.setText("");
-        String[] iSpl=input.split("");
+        String[] iSpl=input.split(" ");
         Log.d("Button Click", "input String split: Name " + iSpl[0] +
-                ", Amount" + iSpl[1] + "Unit" + iSpl[2] );
+                ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
         IngModel Ingred = new IngModel(iSpl[0], Float.parseFloat(iSpl[1]), iSpl[2]);
         IngredList.add(Ingred);
         mAdapter.notifyItemInserted(IngredList.size()-1);
