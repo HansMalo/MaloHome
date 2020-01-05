@@ -91,19 +91,23 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         try{
             float amount=Float.parseFloat(iSpl[1]);
             mInputForm.setText("");
-            Log.d("Button Click", "input String split: Name " + iSpl[0] +
-                    ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
-
-            //TODO: check if added Ingredient is already in IngredList
-            for (int i=0;i<IngredList.size();i++){
+            /*should work
+             Log.d("Button Click", "input String split: Name " + iSpl[0] +
+                   ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
+            */
+            //COMPLETE: check if added Ingredient is already in IngredList
+            for (int i=0;i<IngredList.size();i++) {
                 if (iSpl[0].equalsIgnoreCase(IngredList.get(i).getName())) {
-                    Log.d("Button Click", "Entered if is equal");
-                    float oldAmount=IngredList.get(i).getAmount();
-                    IngredList.get(i).setAmount(oldAmount+amount);
+                    //Log.d("Button Click", "Entered dublicate Name Checker");
+                    float oldAmount = IngredList.get(i).getAmount();
+                    IngredList.get(i).setAmount(oldAmount + amount);
                     mAdapter.notifyDataSetChanged();
                     return;
                 }
             }
+
+
+
 
             IngModel Ingred = new IngModel(iSpl[0], amount, iSpl[2]);
             IngredList.add(Ingred);
@@ -123,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         }
 
     }
+
 
 
 
