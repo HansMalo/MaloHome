@@ -5,8 +5,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
-import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements IngredAdapter.ListItemClickListener {
     private IngredAdapter mAdapter;
     private RecyclerView mIngredList;
+    private EditText mInputForm;
+    private Button mAddBtn;
     private Toast mToast;
     private List<IngModel> IngredList = new ArrayList<>();
 
@@ -22,8 +26,8 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
+        mInputForm = findViewById(R.id.inputForm);
+        mAddBtn=findViewById(R.id.addBtn);
         mIngredList= findViewById(R.id.rv_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredList.setLayoutManager(layoutManager);
@@ -73,40 +77,53 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
 
     }
 
+    public void btnClick(){
+
+        Log.d("Button Click", "Button was clicked");
+        String input=mInputForm.getText().toString();
+        mInputForm.setText("");
+        String[] iSpl=input.split("");
+        Log.d("Button Click", "input String split: Name " + iSpl[0] +
+                ", Amount" + iSpl[1] + "Unit" + iSpl[2] );
+        IngModel Ingred = new IngModel(iSpl[0], Float.parseFloat(iSpl[1]), iSpl[2]);
+        IngredList.add(Ingred);
+        mAdapter.notifyItemInserted(IngredList.size()-1);
+    }
+
 
 
 
     //dummy list for test purposes
     private void initIngredList() {
-        IngModel Ingred = new IngModel("Krass", "g", 50);
+        IngModel Ingred = new IngModel("Krass", 50, "g");
         IngredList.add(Ingred);
 
-        Ingred = new IngModel("Kas", "g", 50);
+        Ingred = new IngModel("Kas", 50, "g");
         IngredList.add(Ingred);
 
-        Ingred = new IngModel("Kaes", "g", 50);
+        Ingred = new IngModel("Kaes", 50, "g");
         IngredList.add(Ingred);
 
-        Ingred = new IngModel("Kos", "g", 50);
+        Ingred = new IngModel("Kos", 50, "g");
         IngredList.add(Ingred);
 
-        Ingred = new IngModel("Kus", "g", 50);
+        Ingred = new IngModel("Kus", 50, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kis", "g", 50);
+        Ingred = new IngModel("Kis", 50, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kms", "g", 50);
+        Ingred = new IngModel("Kms", 50, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kws", "g", 50);
+        Ingred = new IngModel("Kws", 50, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kqs", "g", 50);
+        Ingred = new IngModel("Kqs", 50, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kios", "g", 50);
+        Ingred = new IngModel("Kios", 50, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kaeses", "g", 2550);
+        Ingred = new IngModel("Kaeses", 2550, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Klabss", "g", 10);
+        Ingred = new IngModel("Klabss", 10, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kiaxs", "g", 220);
+        Ingred = new IngModel("Kiaxs", 220, "g");
         IngredList.add(Ingred);
         mAdapter.notifyDataSetChanged();
     }

@@ -6,14 +6,14 @@ public class IngModel {
     private float Amount;
     private String Category;
 
-    public IngModel(String name, String unit, float amount) {
+    public IngModel(String name, float amount, String unit) {
         Name = name;
         Unit = unit;
         Amount = amount;
         Category="None";
     }
 
-    public IngModel(String name, String unit, float amount, String category) {
+    public IngModel(String name, float amount, String unit, String category) {
         Name = name;
         Unit = unit;
         Amount = amount;
