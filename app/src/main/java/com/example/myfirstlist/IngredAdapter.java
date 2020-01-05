@@ -11,18 +11,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredViewHolder>{
 
     private static final String TAG = IngredAdapter.class.getSimpleName();
-
     private List<IngModel> mIngredList;
     //onClickListener to make it easy for Activity to interface with RecyclerView
     final private ListItemClickListener mOnClickListener;
-
     private static int viewHolderCount;
+    DecimalFormat decimalFormat=new DecimalFormat("#.###");
 
     //private int mNumberItems;
 //interface for onListItemClick handling
@@ -88,7 +88,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
         String spc=" ";
         StringBuilder builder=new StringBuilder(mIngredList.get(position).getName());
         builder.append(spc);
-        builder.append(mIngredList.get(position).getAmount());
+        builder.append(decimalFormat.format(mIngredList.get(position).getAmount()));
         builder.append(mIngredList.get(position).getUnit());
         holder.ingView.setText(builder);
     }

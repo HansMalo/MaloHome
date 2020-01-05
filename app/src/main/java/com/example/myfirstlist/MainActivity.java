@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -119,7 +120,8 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
             if (mToast != null) {
                 mToast.cancel();
             }
-            mToast = Toast.makeText(this, "please keep to the input pattern :)", Toast.LENGTH_SHORT);
+            mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
+            mToast.setGravity(Gravity.CENTER,0,0);
 
             mToast.show();
             return;
