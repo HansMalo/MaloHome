@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -49,6 +50,11 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
+        Log.d("onListItemClick", "IngredList Length before removal: " + IngredList.size());
+        IngredList.remove(clickedItemIndex);
+        mAdapter.notifyItemRemoved(clickedItemIndex);
+        Log.d("onListItemClick", "IngredList Length after removal: " + IngredList.size());
+
         if (mToast != null) {
             mToast.cancel();
         }
@@ -60,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
          *
          *                     Item #42 clicked.
          */
-        String toastMessage = "Item #" + clickedItemIndex + " clicked.";
-        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
+        String toastMessage = "Item #" + clickedItemIndex + " clicked and removed.";
+        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT);
 
         mToast.show();
 
