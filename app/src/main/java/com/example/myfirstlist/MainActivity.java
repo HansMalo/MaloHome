@@ -95,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         IngredList.add(Ingred);
         Ingred = new IngModel("Kios", "g", 50);
         IngredList.add(Ingred);
+        Ingred = new IngModel("Kaeses", "g", 2550);
+        IngredList.add(Ingred);
+        Ingred = new IngModel("Klabss", "g", 10);
+        IngredList.add(Ingred);
+        Ingred = new IngModel("Kiaxs", "g", 220);
+        IngredList.add(Ingred);
         mAdapter.notifyDataSetChanged();
     }
 
