@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
 
     }
 
-    public void btnClick(){
+    public void btnClick(View v){
 
         Log.d("Button Click", "Button was clicked");
         String input=mInputForm.getText().toString();
