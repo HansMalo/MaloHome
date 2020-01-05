@@ -14,14 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredViewHolder>{
+
     private static final String TAG = IngredAdapter.class.getSimpleName();
+
     private List<IngModel> mIngredList;
     //onClickListener to make it easy for Activity to interface with RecyclerView
     final private ListItemClickListener mOnClickListener;
 
     private static int viewHolderCount;
 
-    //private int mNumberItems;
+    private int mNumberItems;
 //interface for onListItemClick handling
     public interface ListItemClickListener {
         void onListItemClick(int clickedItemIndex);
@@ -29,8 +31,8 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
     }
 /* Constructor for IngredAdapter that accepts a number of items to display and the specification
      * for the ListItemClickListener. */
-    public IngredAdapter(ListItemClickListener mOnClickListener,List<IngModel> IngredList) {
-        mIngredList=IngredList;
+    public IngredAdapter(List<IngModel> IngredList,ListItemClickListener mOnClickListener) {
+        this.mIngredList=IngredList;
         this.mOnClickListener = mOnClickListener;
         viewHolderCount=0;
     }
@@ -40,7 +42,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
      * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
      *
-     * @param viewGroup The ViewGroup that these ViewHolders are contained within.
+     * @param ViewGroup The ViewGroup that these ViewHolders are contained within.
      * @param viewType  If your RecyclerView has more than one type of item (which ours doesn't) you
      *                  can use this viewType integer to provide a different layout. See
      *                  {@link androidx.recyclerview.widget.RecyclerView.Adapter#getItemViewType(int)}
@@ -50,20 +52,14 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
 
 
     @Override
-    public IngredViewHolder onCreateViewHolder(ViewGroup viewGroup,int viewType){
-
-        Context context=viewGroup.getContext();
-        int layoutIdForListItem=R.layout.ing_list_item;
+    public IngredViewHolder onCreateViewHolder(ViewGroup parent,int viewType){
+        Context context=parent.getContext();
+        //int layoutIdForListItem=R.layout.ing_list_item;
         LayoutInflater inflater=LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup,shouldAttachToParentImmediately);
-        IngredViewHolder viewHolder=new IngredViewHolder(view);
-
-        viewHolder.getItemId().setText
-
-
-
+        View itemView = inflater.inflate(R.layout.ing_list_item, parent,shouldAttachToParentImmediately);
+        IngredViewHolder viewHolder=new IngredViewHolder(itemView);
         viewHolderCount++;
         Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
                 + viewHolderCount);
@@ -85,7 +81,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
     @Override
     public void onBindViewHolder(IngredViewHolder holder, int position) {
         Log.d(TAG, "#" + position);
-        holder.bind(position);
+        holder.ingView.setText(mIngredList.get(position).getName());
     }
 
 
@@ -98,7 +94,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
      */
     @Override
     public int getItemCount() {
-        return mNumberItems;
+        return mIngredList.size();
     }
 
     // COMPLETED (5) Implement OnClickListener in the NumberViewHolder class
@@ -108,30 +104,29 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
 
     class IngredViewHolder extends RecyclerView.ViewHolder implements OnClickListener{
         // Will display the position in the list, ie 0 through getItemCount() - 1
-        TextView ingView;
+        public TextView ingView;
 
         /**
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
          * TextViews and set an onClickListener to listen for clicks. Those will be handled in the
          * onClick method below.
-         * @param itemView The View that you inflated in
+         * @param View The View that you inflated in
          *                 {@link IngredAdapter#onCreateViewHolder(ViewGroup, int)}
          */
 
-        public IngredViewHolder (View itemView){
-            super(itemView);
-
-            ingView=(TextView) ingView.findViewById(R.id.ingView);
+        public IngredViewHolder (View view){
+            super(view);
+            ingView=(TextView) view.findViewById(R.id.ingView);
             ingView.setOnClickListener(this);
         }
 
-        public void setIngredient(Context context, View MainActivity, IngModel mIngModel){
+        public void setIngredient(IngModel mIngModel){
             /*float Amount=mIngModel.getAmount();
             String Unit=mIngModel.getUnit();
             String Name=mIngModel.getName();
             String Category=mIngModel.getCategory(); */
             StringBuilder builder=new StringBuilder(mIngModel.getName());
-            builder.append(Float.toString(mIngModel.getAmount()));
+            builder.append(mIngModel.getAmount());
             builder.append(mIngModel.getUnit());
             ingView.setText(builder);
 
@@ -150,11 +145,12 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
          * use that integer to display the appropriate text within a list item.
          * @param listIndex Position of the item in the list
          *
+         */
 
         void bind(int listIndex) {
             ingView.setText(String.valueOf(listIndex));
         }
-        */
+
 
         // COMPLETED (6) Override onClick, passing the clicked item's position (getAdapterPosition()) to mOnClickListener via its onListItemClick method
         /**

@@ -21,14 +21,14 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //initialize IngredList
-        initIngredList();
 
         mIngredList= findViewById(R.id.rv_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredList.setLayoutManager(layoutManager);
 
-        mAdapter=new IngredAdapter(this,IngredList);
+        mAdapter=new IngredAdapter(IngredList,this);
         mIngredList.setAdapter((mAdapter));
+        initIngredList();
 
 
     }
