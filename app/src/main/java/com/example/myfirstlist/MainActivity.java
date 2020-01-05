@@ -4,6 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -13,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.jsoup.Jsoup;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
     private RecyclerView mIngredList;
     private EditText mInputForm;
     private Button mAddBtn;
+    private Button mGetCP;
     private Toast mToast;
     private ArrayList<IngModel> IngredList = new ArrayList<>();
 
@@ -30,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         setContentView(R.layout.activity_main);
         mInputForm = findViewById(R.id.inputForm);
         mAddBtn=findViewById(R.id.addBtn);
+        mGetCP=findViewById(R.id.cBBtn);
         mIngredList= findViewById(R.id.rv_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredList.setLayoutManager(layoutManager);
@@ -79,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
 
     }
 
+
     public void btnClick(View v){
 
         Log.d("Button Click", "Button was clicked");
@@ -126,6 +135,33 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
             mToast.show();
             return;
 
+        }
+
+    }
+
+    public void receiveDataFromClipboard(View v) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (!(clipboard.hasPrimaryClip())) {
+            return;
+            //do nothing or throw error?
+        } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
+            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+            String cb=item.getText().toString();
+            String newcb= Jsoup.parse(cb).text();
+
+            Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
+            Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
+            // This disables the paste menu item, since the clipboard has data but it is not plain text
+            return;
+        } else {
+
+            // This enables the paste menu item, since the clipboard contains plain text.
+            ClipData.Item item1 = clipboard.getPrimaryClip().getItemAt(0);
+            String mitem2=item1.getText().toString();
+            String newcb= Jsoup.parse(mitem2).text();
+            Log.d("DataFromClipboard","receiveDatafrom CB performed " + mitem2);
+            Log.d("DataFromClipboard","receiveDatafrom CB performed " + newcb);
+            return;
         }
 
     }
