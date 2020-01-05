@@ -11,9 +11,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_gravity="center_vertical|start"
+        android:layout_gravity="center_vertical|center"
         android:fontFamily="monospace"
-        android:textSize="42sp"
+        android:textSize="22sp"
         tools:text="#42"
         android:text="TextView" />
+
 </LinearLayout>
