@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
     private EditText mInputForm;
     private Button mAddBtn;
     private Toast mToast;
-    private List<IngModel> IngredList = new ArrayList<>();
+    private ArrayList<IngModel> IngredList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +89,27 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         String[] iSpl=input.split(" ");
         //TODO: add case handling for different input styles i.e. input does not correspond to expected format
         try{
-            Float.parseFloat(iSpl[1]);
+            float amount=Float.parseFloat(iSpl[1]);
+            mInputForm.setText("");
+            Log.d("Button Click", "input String split: Name " + iSpl[0] +
+                    ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
+
+            //TODO: check if added Ingredient is already in IngredList
+            for (int i=0;i<IngredList.size();i++){
+                if (iSpl[0].equalsIgnoreCase(IngredList.get(i).getName())) {
+                    Log.d("Button Click", "Entered if is equal");
+                    float oldAmount=IngredList.get(i).getAmount();
+                    IngredList.get(i).setAmount(oldAmount+amount);
+                    mAdapter.notifyDataSetChanged();
+                    return;
+                }
+            }
+
+            IngModel Ingred = new IngModel(iSpl[0], amount, iSpl[2]);
+            IngredList.add(Ingred);
+
+
+            mAdapter.notifyItemInserted(IngredList.size()-1);
         }
         catch (Exception e){
             if (mToast != null) {
@@ -101,14 +121,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
             return;
 
         }
-        mInputForm.setText("");
-        Log.d("Button Click", "input String split: Name " + iSpl[0] +
-                ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
-        IngModel Ingred = new IngModel(iSpl[0], Float.parseFloat(iSpl[1]), iSpl[2]);
-        IngredList.add(Ingred);
 
-
-        mAdapter.notifyItemInserted(IngredList.size()-1);
     }
 
 
