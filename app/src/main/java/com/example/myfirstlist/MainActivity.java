@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //initialize IngredList
+
 
         mIngredList= findViewById(R.id.rv_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -28,10 +29,13 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
 
         mAdapter=new IngredAdapter(IngredList,this);
         mIngredList.setAdapter((mAdapter));
+        //initialize IngredList
         initIngredList();
+        }
 
 
-    }
+
+
 
     // COMPLETED (10) Override ListItemClickListener's onListItemClick method
     /**
@@ -42,17 +46,9 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
      *
      * @param clickedItemIndex Index in the list of the item that was clicked.
      */
+
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        // COMPLETED (11) In the beginning of the method, cancel the Toast if it isn't null
-        /*
-         * Even if a Toast isn't showing, it's okay to cancel it. Doing so
-         * ensures that our new Toast will show immediately, rather than
-         * being delayed while other pending Toasts are shown.
-         *
-         * Comment out these three lines, run the app, and click on a bunch of
-         * different items if you're not sure what I'm talking about.
-         */
         if (mToast != null) {
             mToast.cancel();
         }
@@ -68,8 +64,13 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
 
         mToast.show();
+
     }
 
+
+
+
+    //dummy list for test purposes
     private void initIngredList() {
         IngModel Ingred = new IngModel("Krass", "g", 50);
         IngredList.add(Ingred);
