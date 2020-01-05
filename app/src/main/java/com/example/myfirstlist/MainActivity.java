@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //initialize IngredList
+        initIngredList();
 
         mIngredList= findViewById(R.id.rv_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
 
         mAdapter=new IngredAdapter(this,IngredList);
         mIngredList.setAdapter((mAdapter));
+
 
     }
 
@@ -65,6 +68,34 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
 
         mToast.show();
+    }
+
+    private void initIngredList() {
+        IngModel Ingred = new IngModel("Krass", "g", 50);
+        IngredList.add(Ingred);
+
+        Ingred = new IngModel("Kas", "g", 50);
+        IngredList.add(Ingred);
+
+        Ingred = new IngModel("Kaes", "g", 50);
+        IngredList.add(Ingred);
+
+        Ingred = new IngModel("Kos", "g", 50);
+        IngredList.add(Ingred);
+
+        Ingred = new IngModel("Kus", "g", 50);
+        IngredList.add(Ingred);
+        Ingred = new IngModel("Kis", "g", 50);
+        IngredList.add(Ingred);
+        Ingred = new IngModel("Kms", "g", 50);
+        IngredList.add(Ingred);
+        Ingred = new IngModel("Kws", "g", 50);
+        IngredList.add(Ingred);
+        Ingred = new IngModel("Kqs", "g", 50);
+        IngredList.add(Ingred);
+        Ingred = new IngModel("Kios", "g", 50);
+        IngredList.add(Ingred);
+        mAdapter.notifyDataSetChanged();
     }
 
 }
