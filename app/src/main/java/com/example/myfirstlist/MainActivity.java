@@ -81,13 +81,34 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
     public void btnClick(View v){
 
         Log.d("Button Click", "Button was clicked");
-        String input=mInputForm.getText().toString();
-        mInputForm.setText("");
-        String[] iSpl=input.split(" ");
-        Log.d("Button Click", "input String split: Name " + iSpl[0] +
-                ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
-        IngModel Ingred = new IngModel(iSpl[0], Float.parseFloat(iSpl[1]), iSpl[2]);
-        IngredList.add(Ingred);
+        String input;
+
+
+            input=mInputForm.getText().toString();
+            Log.d("Button Click", "input String " + input );
+            mInputForm.setText("");
+            String[] iSpl=input.split(" ");
+            //TODO: add case handling for different input styles i.e. input does not correspond to expected format
+            try{
+                Float.parseFloat(iSpl[0]);
+            }
+            catch (Exception e){
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(this, "please keep to the input pattern :)", Toast.LENGTH_SHORT);
+
+                mToast.show();
+                return;
+
+
+            }
+            Log.d("Button Click", "input String split: Name " + iSpl[0] +
+                    ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
+            IngModel Ingred = new IngModel(iSpl[0], Float.parseFloat(iSpl[1]), iSpl[2]);
+            IngredList.add(Ingred);
+
+
         mAdapter.notifyItemInserted(IngredList.size()-1);
     }
 
@@ -118,14 +139,14 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         IngredList.add(Ingred);
         Ingred = new IngModel("Kqs", 50, "g");
         IngredList.add(Ingred);
-        Ingred = new IngModel("Kios", 50, "g");
+        /*Ingred = new IngModel("Kios", 50, "g");
         IngredList.add(Ingred);
         Ingred = new IngModel("Kaeses", 2550, "g");
         IngredList.add(Ingred);
         Ingred = new IngModel("Klabss", 10, "g");
         IngredList.add(Ingred);
         Ingred = new IngModel("Kiaxs", 220, "g");
-        IngredList.add(Ingred);
+        IngredList.add(Ingred); */
         mAdapter.notifyDataSetChanged();
     }
 
