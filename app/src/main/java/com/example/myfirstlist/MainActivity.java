@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         mAdapter=new IngredAdapter(IngredList,this);
         mIngredList.setAdapter((mAdapter));
         //initialize IngredList
-        initIngredListshrt();
+        //initIngredListshrt();
         }
 
 
@@ -163,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
                 CharSequence cb = item.getText();
                 String newcb = Jsoup.clean((String) cb, "", Whitelist.none(), settings);
                 String[] allcb = newcb.split("\n");
-                //TODO resolve issue for proper handling to search for dublicate items
-
+                //Complete resolve issue for proper handling to search for dublicate items
+                boolean isInList=false;
                 for (int k = 0; k < allcb.length; k++) {
                     String[] input = allcb[k].split("\t");
                     String name = input[1];
@@ -176,18 +176,25 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
                             float oldAmount = IngredList.get(i).getAmount();
                             IngredList.get(i).setAmount(oldAmount + amount);
                             mAdapter.notifyDataSetChanged();
+                            isInList=true;
+                            i=IngredList.size();
+
 
                         }
-                        else{
-                            IngModel Ingred = new IngModel(name, amount, input2[1]);
-                            IngredList.add(Ingred);
-                            mAdapter.notifyItemInserted(IngredList.size()-1);;
-                            //mAdapter.notifyItemChanged(IngredList.size());
-                        }
+
+
+
+                    }
+                    if (!isInList) {
+                        IngModel Ingred = new IngModel(name, amount, input2[1]);
+                        IngredList.add(Ingred);
+                        mAdapter.notifyItemInserted(IngredList.size() - 1);
+                        ;
+                        //mAdapter.notifyItemChanged(IngredList.size());
                     }
 
                 }
-                mAdapter.notifyDataSetChanged();
+                //mAdapter.notifyDataSetChanged();
 
                 //Log.d("DataFromClipboard","receiveDatafrom CB performed \n" + cb);
                 //Log.d("DataFromClipboard","receiveDatafrom newCB performed \n" + allcb[1]+allcb[2]);
