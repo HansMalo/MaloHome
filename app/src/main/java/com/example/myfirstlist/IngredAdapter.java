@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -20,7 +21,10 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
     private static final String TAG = IngredAdapter.class.getSimpleName();
     private List<IngModel> mIngredList;
     //onClickListener to make it easy for Activity to interface with RecyclerView
+    //remove item on click
     final private ListItemClickListener mOnClickListener;
+    //onLongClickListener same as clicklistener, for Item editing
+    final private ListItemLongClickListener mOnClickLongListener;
     private static int viewHolderCount;
     DecimalFormat decimalFormat=new DecimalFormat("#.###");
 
@@ -31,13 +35,18 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
         void onListItemClick(int clickedItemIndex);
     }
 
+    public interface ListItemLongClickListener {
+       void onListItemLongClick(int clickedItemIndex);
+    }
+
 /* Constructor for IngredAdapter that accepts a number of items to display and the specification
      * for the ListItemClickListener.
      * @param List<IngModel> List with IngredientsModel objects as described in the IngModel class
      * @param listener Listener for list item clicks */
-    public IngredAdapter(List<IngModel> IngredList, ListItemClickListener listener) {
+    public IngredAdapter(List<IngModel> IngredList, ListItemClickListener listener, ListItemLongClickListener longListener) {
         this.mIngredList=IngredList;
         mOnClickListener=listener;
+        mOnClickLongListener=longListener;
         viewHolderCount=0;
     }
 
@@ -111,7 +120,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
      * Cache of the children views for a list item.
      */
 
-    class IngredViewHolder extends RecyclerView.ViewHolder implements OnClickListener{
+    class IngredViewHolder extends RecyclerView.ViewHolder implements OnClickListener, OnLongClickListener {
         // Will display the position in the list, ie 0 through getItemCount() - 1
         public TextView ingView;
 
@@ -127,6 +136,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
             super(view);
             ingView=(TextView) view.findViewById(R.id.ingView);
             ingView.setOnClickListener(this);
+            ingView.setOnLongClickListener(this);
         }
 
         /*
@@ -166,6 +176,12 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
             mOnClickListener.onListItemClick(clickedPosition);
+        }
+        @Override
+        public boolean onLongClick(View v){
+            int clickedPosition = getAdapterPosition();
+            mOnClickLongListener.onListItemLongClick(clickedPosition);
+            return true;
         }
 
     }
