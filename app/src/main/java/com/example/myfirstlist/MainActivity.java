@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         mAdapter=new IngredAdapter(IngredList,this);
         mIngredList.setAdapter((mAdapter));
         //initialize IngredList
-        initIngredList();
+        initIngredListshrt();
         }
 
 
@@ -141,41 +141,72 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
 
     }
 
-    public void receiveDataFromClipboard(View v) {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        if (!(clipboard.hasPrimaryClip())) {
-            return;
-            //do nothing or throw error?
-        } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
-            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-            String cb=item.getText().toString();
-            String newcb= Jsoup.clean(cb, Whitelist.none());
+    public void receiveDataFromClipboard (View v) {
+        //TODO: implement correctly, so items are propoerly displayed at the beginning
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (!(clipboard.hasPrimaryClip())) {
+                return;
+                //do nothing or throw error?
+            } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
+                ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+                String cb = item.getText().toString();
+                String newcb = Jsoup.clean(cb, Whitelist.none());
 
-            Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
-            Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
-            // This disables the paste menu item, since the clipboard has data but it is not plain text
-            return;
-        } else {
-            Document.OutputSettings settings= new Document.OutputSettings();
-            settings.prettyPrint(false);
-            // This enables the paste menu item, since the clipboard contains plain text.
-            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-            CharSequence cb=item.getText();
-            String newcb= Jsoup.clean((String)cb,"", Whitelist.none(),settings);
-            String[] allcb = newcb.split("\n");
+                //Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
+                //Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
+                // This disables the paste menu item, since the clipboard has data but it is not plain text
+                return;
+            } else {
+                Document.OutputSettings settings = new Document.OutputSettings();
+                settings.prettyPrint(false);
+                ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+                CharSequence cb = item.getText();
+                String newcb = Jsoup.clean((String) cb, "", Whitelist.none(), settings);
+                String[] allcb = newcb.split("\n");
+                //TODO resolve issue for proper handling to search for dublicate items
 
-            Log.d("DataFromClipboard","receiveDatafrom CB performed \n" + cb);
-            Log.d("DataFromClipboard","receiveDatafrom newCB performed \n" + allcb[1]+allcb[2]);
+                for (int k = 0; k < allcb.length; k++) {
+                    String[] input = allcb[k].split("\t");
+                    String name = input[1];
+                    String[] input2 = input[0].split(" ");
+                    float amount = Float.parseFloat(input2[0]);
+                    for (int i = 0; i < IngredList.size(); i++) {
+                        if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
+                            //Log.d("Button Click", "Entered dublicate Name Checker");
+                            float oldAmount = IngredList.get(i).getAmount();
+                            IngredList.get(i).setAmount(oldAmount + amount);
+                            mAdapter.notifyDataSetChanged();
 
-            return;
+                        }
+                        else{
+                            IngModel Ingred = new IngModel(name, amount, input2[1]);
+                            IngredList.add(Ingred);
+                            mAdapter.notifyItemInserted(IngredList.size()-1);;
+                            //mAdapter.notifyItemChanged(IngredList.size());
+                        }
+                    }
+
+                }
+                mAdapter.notifyDataSetChanged();
+
+                //Log.d("DataFromClipboard","receiveDatafrom CB performed \n" + cb);
+                //Log.d("DataFromClipboard","receiveDatafrom newCB performed \n" + allcb[1]+allcb[2]);
+
+                return;
+            }
+
         }
 
+
+
+
+
+//initalize List
+    private void initIngredListshrt(){
+        IngModel Ingred = new IngModel("Krass", 50, "g");
+        IngredList.add(Ingred);
+        mAdapter.notifyDataSetChanged();
     }
-
-
-
-
-
     //dummy list for test purposes
     private void initIngredList() {
         IngModel Ingred = new IngModel("Krass", 50, "g");
