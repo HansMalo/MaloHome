@@ -13,6 +13,7 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -24,7 +25,8 @@ import org.jsoup.safety.Whitelist;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements IngredAdapter.ListItemClickListener {
+public class MainActivity extends AppCompatActivity
+        implements IngredAdapter.ListItemClickListener,IngredAdapter.ListItemLongClickListener{
     private IngredAdapter mAdapter;
     private RecyclerView mIngredList;
     private EditText mInputForm;
@@ -44,11 +46,12 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredList.setLayoutManager(layoutManager);
 
-        mAdapter=new IngredAdapter(IngredList,this);
+        mAdapter=new IngredAdapter(IngredList, this, this);
         mIngredList.setAdapter((mAdapter));
         //initialize IngredList
         //initIngredListshrt();
         }
+
 
 
 
@@ -63,6 +66,19 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
      *
      * @param clickedItemIndex Index in the list of the item that was clicked.
      */
+    @Override
+    public void onListItemLongClick(int clickedItemIndex){
+        Log.d("onListItemLongClick", "ClickedItemIndex "
+                + Integer.toString(clickedItemIndex));
+        StringBuilder builder=new StringBuilder(IngredList.get(clickedItemIndex).getName());
+        builder.append(IngredList.get(clickedItemIndex).getAmount());
+        builder.append(IngredList.get(clickedItemIndex).getUnit());
+        mInputForm.setText(builder);
+        //try{
+          //  float amount=Float.parseFloat(iSpl[1]);
+
+
+    }
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
@@ -98,21 +114,95 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         input=mInputForm.getText().toString();
         if (input.isEmpty()){ return;}
         Log.d("Button Click", "input String " + input );
+        createItemFromInput(IngredList,input,mInputForm,mAdapter);
+    }
+
+    public void receiveDataFromClipboard (View v) {
+        //TODO: implement correctly, so items are propoerly displayed at the beginning
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (!(clipboard.hasPrimaryClip())) {
+            if (mToast != null) {
+                mToast.cancel();
+                String toastMessage = "Clipboard is empty";
+                mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT);
+
+                mToast.show();
+                return;
+            }
+
+            //do nothing
+        } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
+            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+            String cb = item.getText().toString();
+            String newcb = Jsoup.clean(cb, Whitelist.none());
+
+            //Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
+            //Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
+            // This disables the paste menu item, since the clipboard has data but it is not plain text
+            return;
+        } else {
+            Document.OutputSettings settings = new Document.OutputSettings();
+            settings.prettyPrint(false);
+            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+            CharSequence cb = item.getText();
+            String newcb = Jsoup.clean((String) cb, "", Whitelist.none(), settings);
+            String[] allcb = newcb.split("\n");
+            //Complete resolve issue for proper handling to search for dublicate items
+            boolean isInList = false;
+            for (int k = 0; k < allcb.length; k++) {
+                String[] input = allcb[k].split("\t");
+                String name = input[1];
+                String[] input2 = input[0].split(" ");
+                float amount = Float.parseFloat(input2[0]);
+                for (int i = 0; i < IngredList.size(); i++) {
+                    if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
+                        //Log.d("Button Click", "Entered dublicate Name Checker");
+                        float oldAmount = IngredList.get(i).getAmount();
+                        IngredList.get(i).setAmount(oldAmount + amount);
+                        mAdapter.notifyDataSetChanged();
+                        isInList = true;
+                        i = IngredList.size();
+
+
+                    }
+
+
+                }
+                if (!isInList) {
+                    IngModel Ingred = new IngModel(name, amount, input2[1]);
+                    IngredList.add(Ingred);
+                    mAdapter.notifyItemInserted(IngredList.size() - 1);
+                    ;
+                    //mAdapter.notifyItemChanged(IngredList.size());
+                }
+
+            }
+            //mAdapter.notifyDataSetChanged();
+
+            //Log.d("DataFromClipboard","receiveDatafrom CB performed \n" + cb);
+            //Log.d("DataFromClipboard","receiveDatafrom newCB performed \n" + allcb[1]+allcb[2]);
+
+            return;
+        }
+    }
+
+    public void createItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter ){
         String[] iSpl=input.split(" ");
         //TODO: add case handling for different input styles i.e. input does not correspond to expected format
+
         try{
             float amount=Float.parseFloat(iSpl[1]);
             mInputForm.setText("");
-            /*should work
-             Log.d("Button Click", "input String split: Name " + iSpl[0] +
-                   ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
-            */
+                /*should work
+                 Log.d("Button Click", "input String split: Name " + iSpl[0] +
+                       ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
+                */
             //COMPLETE: check if added Ingredient is already in IngredList
-            for (int i=0;i<IngredList.size();i++) {
-                if (iSpl[0].equalsIgnoreCase(IngredList.get(i).getName())) {
+            for (int i=0;i<List.size();i++) {
+                if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
                     //Log.d("Button Click", "Entered dublicate Name Checker");
-                    float oldAmount = IngredList.get(i).getAmount();
-                    IngredList.get(i).setAmount(oldAmount + amount);
+                    float oldAmount = List.get(i).getAmount();
+                    List.get(i).setAmount(oldAmount + amount);
                     mAdapter.notifyDataSetChanged();
                     return;
                 }
@@ -138,77 +228,10 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
             return;
 
         }
-
     }
 
-    public void receiveDataFromClipboard (View v) {
-        //TODO: implement correctly, so items are propoerly displayed at the beginning
-            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            if (!(clipboard.hasPrimaryClip())) {
-                return;
-                //do nothing or throw error?
-            } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
-                ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-                String cb = item.getText().toString();
-                String newcb = Jsoup.clean(cb, Whitelist.none());
 
-                //Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
-                //Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
-                // This disables the paste menu item, since the clipboard has data but it is not plain text
-                return;
-            } else {
-                Document.OutputSettings settings = new Document.OutputSettings();
-                settings.prettyPrint(false);
-                ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-                CharSequence cb = item.getText();
-                String newcb = Jsoup.clean((String) cb, "", Whitelist.none(), settings);
-                String[] allcb = newcb.split("\n");
-                //Complete resolve issue for proper handling to search for dublicate items
-                boolean isInList=false;
-                for (int k = 0; k < allcb.length; k++) {
-                    String[] input = allcb[k].split("\t");
-                    String name = input[1];
-                    String[] input2 = input[0].split(" ");
-                    float amount = Float.parseFloat(input2[0]);
-                    for (int i = 0; i < IngredList.size(); i++) {
-                        if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
-                            //Log.d("Button Click", "Entered dublicate Name Checker");
-                            float oldAmount = IngredList.get(i).getAmount();
-                            IngredList.get(i).setAmount(oldAmount + amount);
-                            mAdapter.notifyDataSetChanged();
-                            isInList=true;
-                            i=IngredList.size();
-
-
-                        }
-
-
-
-                    }
-                    if (!isInList) {
-                        IngModel Ingred = new IngModel(name, amount, input2[1]);
-                        IngredList.add(Ingred);
-                        mAdapter.notifyItemInserted(IngredList.size() - 1);
-                        ;
-                        //mAdapter.notifyItemChanged(IngredList.size());
-                    }
-
-                }
-                //mAdapter.notifyDataSetChanged();
-
-                //Log.d("DataFromClipboard","receiveDatafrom CB performed \n" + cb);
-                //Log.d("DataFromClipboard","receiveDatafrom newCB performed \n" + allcb[1]+allcb[2]);
-
-                return;
-            }
-
-        }
-
-
-
-
-
-//initalize List
+    //initalize List
     private void initIngredListshrt(){
         IngModel Ingred = new IngModel("Krass", 50, "g");
         IngredList.add(Ingred);
@@ -248,5 +271,8 @@ public class MainActivity extends AppCompatActivity implements IngredAdapter.Lis
         IngredList.add(Ingred); */
         mAdapter.notifyDataSetChanged();
     }
+
+
+
 
 }
