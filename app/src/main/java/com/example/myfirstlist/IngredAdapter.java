@@ -129,25 +129,20 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
             ingView.setOnClickListener(this);
         }
 
+        /*
         public void setIngredient(IngModel mIngModel){
             /*float Amount=mIngModel.getAmount();
             String Unit=mIngModel.getUnit();
             String Name=mIngModel.getName();
-            String Category=mIngModel.getCategory(); */
+            String Category=mIngModel.getCategory();
             StringBuilder builder=new StringBuilder(mIngModel.getName());
             builder.append(mIngModel.getAmount());
             builder.append(mIngModel.getUnit());
             ingView.setText(builder);
 
-            //not done yet
-            /*itemView.setOnClickListener(view-> {
-
-            });
 
 
-             */
-
-        }
+        } */
 
         /*
          * A method we wrote for convenience. This method will take an integer as input and
