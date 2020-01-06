@@ -70,13 +70,14 @@ public class MainActivity extends AppCompatActivity
     public void onListItemLongClick(int clickedItemIndex){
         Log.d("onListItemLongClick", "ClickedItemIndex "
                 + Integer.toString(clickedItemIndex));
-        StringBuilder builder=new StringBuilder(IngredList.get(clickedItemIndex).getName());
+        StringBuilder builder=new StringBuilder("e: ");
+        builder.append(IngredList.get(clickedItemIndex).getName());
+        builder.append(" ");
         builder.append(IngredList.get(clickedItemIndex).getAmount());
+        builder.append(" ");
         builder.append(IngredList.get(clickedItemIndex).getUnit());
         mInputForm.setText(builder);
-        //try{
-          //  float amount=Float.parseFloat(iSpl[1]);
-
+        mAddBtn.setText("EDIT");
 
     }
 
@@ -105,16 +106,21 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
-    public void btnClick(View v){
+    public void btnClick(View v) {
 
         Log.d("Button Click", "Button was clicked");
         String input;
 
-        input=mInputForm.getText().toString();
-        if (input.isEmpty()){ return;}
-        Log.d("Button Click", "input String " + input );
-        createItemFromInput(IngredList,input,mInputForm,mAdapter);
+        input = mInputForm.getText().toString();
+        if (input.isEmpty()) {
+            return;
+        }
+        if (input.split(" ")[0] == "e:") {
+            editItemFromInput(IngredList,input, mInputForm, mAdapter);
+        } else{
+            Log.d("Button Click", "input String " + input);
+        createItemFromInput(IngredList, input, mInputForm, mAdapter);
+    }
     }
 
     public void receiveDataFromClipboard (View v) {
@@ -184,6 +190,53 @@ public class MainActivity extends AppCompatActivity
 
             return;
         }
+    }
+    public void editItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter )
+    {
+        mAddBtn.setText("ADD");
+        String[] iSpl=input.split(" ");
+        //TODO: add case handling for different input styles i.e. input does not correspond to expected format
+
+        try{
+            float amount=Float.parseFloat(iSpl[2]);
+            mInputForm.setText("");
+                /*should work
+                 Log.d("Button Click", "input String split: Name " + iSpl[0] +
+                       ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
+                */
+            //COMPLETE: check if added Ingredient is already in IngredList
+            for (int i=0;i<List.size();i++) {
+                if (iSpl[1].equalsIgnoreCase(List.get(i).getName())) {
+                    //Log.d("Button Click", "Entered dublicate Name Checker");
+                    List.get(i).setAmount(amount);
+                    mAdapter.notifyDataSetChanged();
+                    return;
+                }
+            }
+
+
+
+
+            IngModel Ingred = new IngModel(iSpl[0], amount, iSpl[2]);
+            IngredList.add(Ingred);
+
+
+            mAdapter.notifyItemInserted(IngredList.size()-1);
+        }
+        catch (Exception e){
+            if (mToast != null) {
+                mToast.cancel();
+            }
+            mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
+            mToast.setGravity(Gravity.CENTER,0,0);
+
+            mToast.show();
+            return;
+
+        }
+
+
+
     }
 
     public void createItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter ){
