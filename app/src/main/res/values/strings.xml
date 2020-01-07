@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyFirstList</string>
+    <string name="InputFormHint">Ingredient: Amount Unit;</string>
 </resources>
