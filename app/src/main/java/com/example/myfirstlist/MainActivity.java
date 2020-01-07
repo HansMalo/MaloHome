@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
                 + Integer.toString(clickedItemIndex));
         StringBuilder builder=new StringBuilder("\b");
         builder.append(IngredList.get(clickedItemIndex).getName());
-        builder.append("\t ");
+        builder.append(":");
         builder.append(IngredList.get(clickedItemIndex).getAmount());
         builder.append(" ");
         builder.append(IngredList.get(clickedItemIndex).getUnit());
