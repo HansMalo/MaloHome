@@ -24,6 +24,8 @@ import org.jsoup.safety.Whitelist;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
         implements IngredAdapter.ListItemClickListener,IngredAdapter.ListItemLongClickListener{
@@ -70,9 +72,9 @@ public class MainActivity extends AppCompatActivity
     public void onListItemLongClick(int clickedItemIndex){
         Log.d("onListItemLongClick", "ClickedItemIndex "
                 + Integer.toString(clickedItemIndex));
-        StringBuilder builder=new StringBuilder("e: ");
+        StringBuilder builder=new StringBuilder("\b");
         builder.append(IngredList.get(clickedItemIndex).getName());
-        builder.append(" ");
+        builder.append("\t ");
         builder.append(IngredList.get(clickedItemIndex).getAmount());
         builder.append(" ");
         builder.append(IngredList.get(clickedItemIndex).getUnit());
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         if (input.isEmpty()) {
             return;
         }
-        if (input.split(" ")[0] == "e:") {
+        if (input.startsWith("\b")) {
             editItemFromInput(IngredList,input, mInputForm, mAdapter);
         } else{
             Log.d("Button Click", "input String " + input);
@@ -193,12 +195,15 @@ public class MainActivity extends AppCompatActivity
     }
     public void editItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter )
     {
-        mAddBtn.setText("ADD");
-        String[] iSpl=input.split(" ");
+
         //TODO: add case handling for different input styles i.e. input does not correspond to expected format
 
         try{
-            float amount=Float.parseFloat(iSpl[2]);
+            String[] iSpl=input.split("\t");
+            iSpl[0]=iSpl[0].substring(1);
+            mAddBtn.setText("ADD");
+            String[] amountUnit=iSpl[1].split(" ");
+            float amount=Float.parseFloat(amountUnit[1]);
             mInputForm.setText("");
                 /*should work
                  Log.d("Button Click", "input String split: Name " + iSpl[0] +
@@ -206,7 +211,7 @@ public class MainActivity extends AppCompatActivity
                 */
             //COMPLETE: check if added Ingredient is already in IngredList
             for (int i=0;i<List.size();i++) {
-                if (iSpl[1].equalsIgnoreCase(List.get(i).getName())) {
+                if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
                     //Log.d("Button Click", "Entered dublicate Name Checker");
                     List.get(i).setAmount(amount);
                     mAdapter.notifyDataSetChanged();
@@ -240,31 +245,39 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void createItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter ){
-        String[] iSpl=input.split(" ");
+        Pattern amountPattern=Pattern.compile("\\d+");
+        Pattern unitPattern=Pattern.compile("[a-zA-Z]+");
+        String[] iSpl=input.split(":");
+        String name=iSpl[0];
+        String samount=" ";
+        String unit="";
+        Matcher amountMatcher=amountPattern.matcher(iSpl[1]);
+        Matcher unitMatcher=unitPattern.matcher(iSpl[1]);
+
+        if (amountMatcher.find(0)|unitMatcher.find(0)){
+            samount=amountMatcher.group();
+            unit=unitMatcher.group();
+        }
         //TODO: add case handling for different input styles i.e. input does not correspond to expected format
 
         try{
-            float amount=Float.parseFloat(iSpl[1]);
+            float famount=Float.parseFloat(samount);
             mInputForm.setText("");
                 /*should work
                  Log.d("Button Click", "input String split: Name " + iSpl[0] +
                        ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
                 */
-            //COMPLETE: check if added Ingredient is already in IngredList
+            //COMPLETE: check if added Ingredient name is already in IngredList
             for (int i=0;i<List.size();i++) {
                 if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
                     //Log.d("Button Click", "Entered dublicate Name Checker");
                     float oldAmount = List.get(i).getAmount();
-                    List.get(i).setAmount(oldAmount + amount);
+                    List.get(i).setAmount(oldAmount + famount);
                     mAdapter.notifyDataSetChanged();
                     return;
                 }
             }
-
-
-
-
-            IngModel Ingred = new IngModel(iSpl[0], amount, iSpl[2]);
+            IngModel Ingred = new IngModel(name, famount, unit);
             IngredList.add(Ingred);
 
 
