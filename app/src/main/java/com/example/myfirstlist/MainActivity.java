@@ -25,14 +25,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
-        implements IngredAdapter.ListItemClickListener,IngredAdapter.ListItemLongClickListener{
+        implements IngredAdapter.ListItemClickListener,IngredAdapter.ListItemLongClickListener,RemItemsAdapter.ListItemClickListener{
     private IngredAdapter mAdapter;
     private RecyclerView mIngredList;
+    private RecyclerView mRemIngredList;
+    private RemItemsAdapter mRemItemsAdapter;
     private EditText mInputForm;
     private Button mAddBtn;
     private Button mGetCBBtn;
     private Toast mToast;
     private ArrayList<IngModel> IngredList = new ArrayList<>();
+    private ArrayList<IngModel> remIngredList = new ArrayList<>();
     int clickedItemIndexint=0;
     boolean editing=false;
 
@@ -43,12 +46,21 @@ public class MainActivity extends AppCompatActivity
         mInputForm = findViewById(R.id.inputForm);
         mAddBtn=findViewById(R.id.addBtn);
         mGetCBBtn =findViewById(R.id.cBBtn);
+        //setting up recycler view for ingredients
         mIngredList= findViewById(R.id.rv_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredList.setLayoutManager(layoutManager);
-
         mAdapter=new IngredAdapter(IngredList, this, this);
         mIngredList.setAdapter((mAdapter));
+        //setting up remove List RecyclerView
+        mRemIngredList= findViewById(R.id.rv_rmItemsContainer);
+        LinearLayoutManager layoutManagerRemItem = new LinearLayoutManager(this);
+        mRemIngredList.setLayoutManager(layoutManagerRemItem);
+        mRemItemsAdapter=new RemItemsAdapter(remIngredList, this, this);
+        mRemIngredList.setAdapter((mAdapter));
+
+
+
         //initialize IngredList
         //initIngredListshrt();
         }
