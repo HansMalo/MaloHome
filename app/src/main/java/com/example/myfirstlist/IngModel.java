@@ -45,6 +45,10 @@ public class IngModel {
         this.Amount = amount;
     }
 
+    public void setName(String name) {
+        Name = name;
+    }
+
     public void setCategory(String category) {
         this.Category = category;
     }
