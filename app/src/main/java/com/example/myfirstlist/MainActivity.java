@@ -257,6 +257,7 @@ public class MainActivity extends AppCompatActivity
                     samount = inputMatcher.group(1);
                     unit = inputMatcher.group(2);
                 }
+                else{unit=iSpl[1];}
 
 
                 float famount = Float.parseFloat(samount);
@@ -301,9 +302,10 @@ public class MainActivity extends AppCompatActivity
                 samount = inputMatcher.group(1);
                 unit = inputMatcher.group(2);
             }
+            //use unit as text output if no reasonable number was given
+            else{unit=iSpl[1];}
 
-            //complete: add case handling for different input styles i.e. input does not correspond to expected format
-
+            //is try necessary at this point?
             try {
                 float famount = Float.parseFloat(samount);
                 mInputForm.setText("");
