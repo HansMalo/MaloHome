@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity
                 //most recipe lists from websites are seperated by \t between ingredient and amount unit
                 String[] input = allcb[k].split("\t");
                 String name = input[1];
-                //TODO: better input handling here
+                //Complete: better input handling here
                 Pattern inputPattern=Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
                 String samount=" ";
                 String unit="";
@@ -246,25 +246,30 @@ public class MainActivity extends AppCompatActivity
             mAddBtn.setText("ADD");
             mGetCBBtn.setText("CB");
             String[] iSpl=input.split(":");
-            Pattern inputPattern=Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
-            String name=iSpl[0];
-            String samount=" ";
-            String unit="";
-            Matcher inputMatcher=inputPattern.matcher(iSpl[1]);
-            //check if any amount or unit were given
-            if (inputMatcher.find(0)){
-                samount=inputMatcher.group(1);
-                unit=inputMatcher.group(2);}
+            String samount = " ";
+            String unit = "";
+            String name = iSpl[0];
+            if (iSpl.length>1) {
+                Pattern inputPattern = Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
+                Matcher inputMatcher = inputPattern.matcher(iSpl[1]);
+                //check if any amount or unit were given
+                if (inputMatcher.find(0)) {
+                    samount = inputMatcher.group(1);
+                    unit = inputMatcher.group(2);
+                }
 
 
-
-
-            float famount=Float.parseFloat(samount);
-            mInputForm.setText("");
+                float famount = Float.parseFloat(samount);
+                mInputForm.setText("");
+                IngredList.get(clickedItemIndexint).setName(name);
+                IngredList.get(clickedItemIndexint).setAmount(famount);
+                IngredList.get(clickedItemIndexint).setUnit(unit);
+                mAdapter.notifyItemChanged(clickedItemIndexint);
+            }
             IngredList.get(clickedItemIndexint).setName(name);
-            IngredList.get(clickedItemIndexint).setAmount(famount);
+            IngredList.get(clickedItemIndexint).setAmount(0);
             IngredList.get(clickedItemIndexint).setUnit(unit);
-            mAdapter.notifyItemChanged(clickedItemIndexint);
+
         }
         catch (Exception e){
             if (mToast != null) {
@@ -286,50 +291,57 @@ public class MainActivity extends AppCompatActivity
         Pattern inputPattern=Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
         String[] iSpl=input.split(":");
         String name=iSpl[0];
-        String samount=" ";
-        String unit="";
-        Matcher inputMatcher=inputPattern.matcher(iSpl[1]);
+        String samount = " ";
+        String unit = "";
+        //TODO: input handling no amount given, now: amount=0
+        if(iSpl.length>1) {
+            Matcher inputMatcher = inputPattern.matcher(iSpl[1]);
 
-        if (inputMatcher.find(0)){
-            samount=inputMatcher.group(1);
-            unit=inputMatcher.group(2);}
+            if (inputMatcher.find(0)) {
+                samount = inputMatcher.group(1);
+                unit = inputMatcher.group(2);
+            }
 
-        //complete: add case handling for different input styles i.e. input does not correspond to expected format
+            //complete: add case handling for different input styles i.e. input does not correspond to expected format
 
-        try{
-            float famount=Float.parseFloat(samount);
-            mInputForm.setText("");
+            try {
+                float famount = Float.parseFloat(samount);
+                mInputForm.setText("");
                 /*should work
                  Log.d("Button Click", "input String split: Name " + iSpl[0] +
                        ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
                 */
-            //COMPLETE: check if added Ingredient name is already in IngredList
-            for (int i=0;i<List.size();i++) {
-                if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
-                    //Log.d("Button Click", "Entered dublicate Name Checker");
-                    float oldAmount = List.get(i).getAmount();
-                    List.get(i).setAmount(oldAmount + famount);
-                    mAdapter.notifyDataSetChanged();
-                    return;
+                //COMPLETE: check if added Ingredient name is already in IngredList
+                for (int i = 0; i < List.size(); i++) {
+                    if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
+                        //Log.d("Button Click", "Entered dublicate Name Checker");
+                        float oldAmount = List.get(i).getAmount();
+                        List.get(i).setAmount(oldAmount + famount);
+                        mAdapter.notifyDataSetChanged();
+                        return;
+                    }
                 }
+                IngModel Ingred = new IngModel(name, famount, unit);
+                IngredList.add(Ingred);
+
+
+                mAdapter.notifyItemInserted(IngredList.size() - 1);
+            } catch (Exception e) {
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
+                mToast.setGravity(Gravity.CENTER, 0, 0);
+
+                mToast.show();
+                return;
+
             }
-            IngModel Ingred = new IngModel(name, famount, unit);
-            IngredList.add(Ingred);
-
-
-            mAdapter.notifyItemInserted(IngredList.size()-1);
-        }
-        catch (Exception e){
-            if (mToast != null) {
-                mToast.cancel();
-            }
-            mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
-            mToast.setGravity(Gravity.CENTER,0,0);
-
-            mToast.show();
-            return;
 
         }
+        IngModel Ingred = new IngModel(name, 0, unit);
+        IngredList.add(Ingred);
+        mAdapter.notifyItemInserted(IngredList.size() - 1);
     }
 
 
