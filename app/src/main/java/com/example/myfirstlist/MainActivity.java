@@ -119,15 +119,24 @@ public class MainActivity extends AppCompatActivity
         String input;
 
         input = mInputForm.getText().toString();
-        if (input.isEmpty()) {
-            return;
-        }
         if (editing) {
+            if (input.isEmpty()) {
+                mAddBtn.setText("ADD");
+                mGetCBBtn.setText("CB");
+                mAdapter.notifyDataSetChanged();
+                return;
+            }
+            editing=false;
             editItemFromInput(IngredList,input, mInputForm, mAdapter);
         } else{
+            if (input.isEmpty()) {
+                return;
+            }
             Log.d("Button Click", "input String " + input);
-        createItemFromInput(IngredList, input, mInputForm, mAdapter);
-    }
+            createItemFromInput(IngredList, input, mInputForm, mAdapter);
+        }
+
+
     }
 
     public void cbBtnClicked (View v) {
@@ -170,21 +179,33 @@ public class MainActivity extends AppCompatActivity
             return;
         } else {
             Document.OutputSettings settings = new Document.OutputSettings();
+            //setting prettyprint false to keep \n and other formating chars
             settings.prettyPrint(false);
+            //read data from clipboard
             ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
             CharSequence cb = item.getText();
+            //using Jsoup module to strip html from string
             String newcb = Jsoup.clean((String) cb, "", Whitelist.none(), settings);
             String[] allcb = newcb.split("\n");
             //Complete resolve issue for proper handling to search for dublicate items
             boolean isInList = false;
             for (int k = 0; k < allcb.length; k++) {
+                isInList=false;
+                //most recipe lists from websites are seperated by \t between ingredient and amount unit
                 String[] input = allcb[k].split("\t");
                 String name = input[1];
                 //TODO: better input handling here
-                String[] input2 = input[0].split(" ");
+                Pattern inputPattern=Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
+                String samount=" ";
+                String unit="";
+                Matcher inputMatcher=inputPattern.matcher(input[0]);
+
+                if (inputMatcher.find(0)){
+                    samount=inputMatcher.group(1);
+                    unit=inputMatcher.group(2);}
                 float amount=0;
                 try {
-                    amount = Float.parseFloat(input2[0]);
+                    amount = Float.parseFloat(samount);
                     for (int i = 0; i < IngredList.size(); i++) {
                         if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
                             //Log.d("Button Click", "Entered dublicate Name Checker");
@@ -193,19 +214,15 @@ public class MainActivity extends AppCompatActivity
                             mAdapter.notifyDataSetChanged();
                             isInList = true;
                             i = IngredList.size();
-
-
                         }
-
-
                     }
                 }
                 catch (Exception e){
-                    //TODO: exception handling for non float characters in Clipboard copy past routine
+                    //TODO: proper exception handling for non float characters in Clipboard copy past routine
                     amount=0;
                 }
                 if (!isInList) {
-                    IngModel Ingred = new IngModel(name, amount, input2[1]);
+                    IngModel Ingred = new IngModel(name, amount, unit);
                     IngredList.add(Ingred);
                     mAdapter.notifyItemInserted(IngredList.size() - 1);
                     ;
@@ -229,14 +246,18 @@ public class MainActivity extends AppCompatActivity
             mAddBtn.setText("ADD");
             mGetCBBtn.setText("CB");
             String[] iSpl=input.split(":");
-            Pattern inputPattern=Pattern.compile("(\\d+\\.\\d)\\s*([a-zA-Z]+)");
+            Pattern inputPattern=Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
             String name=iSpl[0];
             String samount=" ";
             String unit="";
             Matcher inputMatcher=inputPattern.matcher(iSpl[1]);
+            //check if any amount or unit were given
             if (inputMatcher.find(0)){
                 samount=inputMatcher.group(1);
                 unit=inputMatcher.group(2);}
+
+
+
 
             float famount=Float.parseFloat(samount);
             mInputForm.setText("");
@@ -262,7 +283,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void createItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter ){
-        Pattern inputPattern=Pattern.compile("(\\d+)\\s*([a-zA-Z]+)");
+        Pattern inputPattern=Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
         String[] iSpl=input.split(":");
         String name=iSpl[0];
         String samount=" ";
@@ -273,7 +294,7 @@ public class MainActivity extends AppCompatActivity
             samount=inputMatcher.group(1);
             unit=inputMatcher.group(2);}
 
-        //TODO: add case handling for different input styles i.e. input does not correspond to expected format
+        //complete: add case handling for different input styles i.e. input does not correspond to expected format
 
         try{
             float famount=Float.parseFloat(samount);
@@ -318,40 +339,7 @@ public class MainActivity extends AppCompatActivity
         IngredList.add(Ingred);
         mAdapter.notifyDataSetChanged();
     }
-    //dummy list for test purposes
-    private void initIngredList() {
-        IngModel Ingred = new IngModel("Krass", 50, "g");
-        IngredList.add(Ingred);
 
-        Ingred = new IngModel("Kas", 50, "g");
-        IngredList.add(Ingred);
-
-        Ingred = new IngModel("Kaes", 50, "g");
-        IngredList.add(Ingred);
-
-        Ingred = new IngModel("Kos", 50, "g");
-        IngredList.add(Ingred);
-
-        Ingred = new IngModel("Kus", 50, "g");
-        IngredList.add(Ingred);
-        Ingred = new IngModel("Kis", 50, "g");
-        IngredList.add(Ingred);
-        Ingred = new IngModel("Kms", 50, "g");
-        IngredList.add(Ingred);
-        Ingred = new IngModel("Kws", 50, "g");
-        IngredList.add(Ingred);
-        Ingred = new IngModel("Kqs", 50, "g");
-        IngredList.add(Ingred);
-        /*Ingred = new IngModel("Kios", 50, "g");
-        IngredList.add(Ingred);
-        Ingred = new IngModel("Kaeses", 2550, "g");
-        IngredList.add(Ingred);
-        Ingred = new IngModel("Klabss", 10, "g");
-        IngredList.add(Ingred);
-        Ingred = new IngModel("Kiaxs", 220, "g");
-        IngredList.add(Ingred); */
-        mAdapter.notifyDataSetChanged();
-    }
 
 
 
