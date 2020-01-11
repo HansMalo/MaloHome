@@ -9,11 +9,9 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,7 +21,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.safety.Whitelist;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,9 +30,11 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView mIngredList;
     private EditText mInputForm;
     private Button mAddBtn;
-    private Button mGetCP;
+    private Button mGetCBBtn;
     private Toast mToast;
     private ArrayList<IngModel> IngredList = new ArrayList<>();
+    int clickedItemIndexint=0;
+    boolean editing=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mInputForm = findViewById(R.id.inputForm);
         mAddBtn=findViewById(R.id.addBtn);
-        mGetCP=findViewById(R.id.cBBtn);
+        mGetCBBtn =findViewById(R.id.cBBtn);
         mIngredList= findViewById(R.id.rv_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mIngredList.setLayoutManager(layoutManager);
@@ -72,14 +71,20 @@ public class MainActivity extends AppCompatActivity
     public void onListItemLongClick(int clickedItemIndex){
         Log.d("onListItemLongClick", "ClickedItemIndex "
                 + Integer.toString(clickedItemIndex));
-        StringBuilder builder=new StringBuilder("\b");
-        builder.append(IngredList.get(clickedItemIndex).getName());
-        builder.append(":");
+
+        //copy Text to show in editTextField
+        StringBuilder builder=new StringBuilder(IngredList.get(clickedItemIndex).getName());
+        builder.append(": ");
         builder.append(IngredList.get(clickedItemIndex).getAmount());
         builder.append(" ");
         builder.append(IngredList.get(clickedItemIndex).getUnit());
         mInputForm.setText(builder);
+
+        //set flag editTextField is now used for editing an item
+        editing=true;
         mAddBtn.setText("EDIT");
+        mGetCBBtn.setText("Cancel");
+        clickedItemIndexint=clickedItemIndex;
 
     }
 
@@ -108,7 +113,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void btnClick(View v) {
+    public void addBtnClick(View v) {
 
         Log.d("Button Click", "Button was clicked");
         String input;
@@ -117,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         if (input.isEmpty()) {
             return;
         }
-        if (input.startsWith("\b")) {
+        if (editing) {
             editItemFromInput(IngredList,input, mInputForm, mAdapter);
         } else{
             Log.d("Button Click", "input String " + input);
@@ -125,8 +130,23 @@ public class MainActivity extends AppCompatActivity
     }
     }
 
-    public void receiveDataFromClipboard (View v) {
-        //TODO: implement correctly, so items are propoerly displayed at the beginning
+    public void cbBtnClicked (View v) {
+        if (editing){
+            //cancel editing and clear text
+            mAddBtn.setText("ADD");
+            mGetCBBtn.setText("CB");
+            editing=false;
+            mInputForm.setText("");
+            return;
+        }
+
+        else {addItemFromClipboard();}
+
+    }
+
+    public void addItemFromClipboard (){
+
+        //Completed: implement correctly, so items are propoerly displayed at the beginning
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (!(clipboard.hasPrimaryClip())) {
             if (mToast != null) {
@@ -160,21 +180,29 @@ public class MainActivity extends AppCompatActivity
             for (int k = 0; k < allcb.length; k++) {
                 String[] input = allcb[k].split("\t");
                 String name = input[1];
+                //TODO: better input handling here
                 String[] input2 = input[0].split(" ");
-                float amount = Float.parseFloat(input2[0]);
-                for (int i = 0; i < IngredList.size(); i++) {
-                    if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
-                        //Log.d("Button Click", "Entered dublicate Name Checker");
-                        float oldAmount = IngredList.get(i).getAmount();
-                        IngredList.get(i).setAmount(oldAmount + amount);
-                        mAdapter.notifyDataSetChanged();
-                        isInList = true;
-                        i = IngredList.size();
+                float amount=0;
+                try {
+                    amount = Float.parseFloat(input2[0]);
+                    for (int i = 0; i < IngredList.size(); i++) {
+                        if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
+                            //Log.d("Button Click", "Entered dublicate Name Checker");
+                            float oldAmount = IngredList.get(i).getAmount();
+                            IngredList.get(i).setAmount(oldAmount + amount);
+                            mAdapter.notifyDataSetChanged();
+                            isInList = true;
+                            i = IngredList.size();
+
+
+                        }
 
 
                     }
-
-
+                }
+                catch (Exception e){
+                    //TODO: exception handling for non float characters in Clipboard copy past routine
+                    amount=0;
                 }
                 if (!isInList) {
                     IngModel Ingred = new IngModel(name, amount, input2[1]);
@@ -193,40 +221,29 @@ public class MainActivity extends AppCompatActivity
             return;
         }
     }
-    public void editItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter )
-    {
+    public void editItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter ){
 
         //TODO: add case handling for different input styles i.e. input does not correspond to expected format
 
         try{
-            String[] iSpl=input.split("\t");
-            iSpl[0]=iSpl[0].substring(1);
             mAddBtn.setText("ADD");
-            String[] amountUnit=iSpl[1].split(" ");
-            float amount=Float.parseFloat(amountUnit[1]);
+            mGetCBBtn.setText("CB");
+            String[] iSpl=input.split(":");
+            Pattern inputPattern=Pattern.compile("(\\d+\\.\\d)\\s*([a-zA-Z]+)");
+            String name=iSpl[0];
+            String samount=" ";
+            String unit="";
+            Matcher inputMatcher=inputPattern.matcher(iSpl[1]);
+            if (inputMatcher.find(0)){
+                samount=inputMatcher.group(1);
+                unit=inputMatcher.group(2);}
+
+            float famount=Float.parseFloat(samount);
             mInputForm.setText("");
-                /*should work
-                 Log.d("Button Click", "input String split: Name " + iSpl[0] +
-                       ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
-                */
-            //COMPLETE: check if added Ingredient is already in IngredList
-            for (int i=0;i<List.size();i++) {
-                if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
-                    //Log.d("Button Click", "Entered dublicate Name Checker");
-                    List.get(i).setAmount(amount);
-                    mAdapter.notifyDataSetChanged();
-                    return;
-                }
-            }
-
-
-
-
-            IngModel Ingred = new IngModel(iSpl[0], amount, iSpl[2]);
-            IngredList.add(Ingred);
-
-
-            mAdapter.notifyItemInserted(IngredList.size()-1);
+            IngredList.get(clickedItemIndexint).setName(name);
+            IngredList.get(clickedItemIndexint).setAmount(famount);
+            IngredList.get(clickedItemIndexint).setUnit(unit);
+            mAdapter.notifyItemChanged(clickedItemIndexint);
         }
         catch (Exception e){
             if (mToast != null) {
@@ -245,19 +262,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void createItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter ){
-        Pattern amountPattern=Pattern.compile("\\d+");
-        Pattern unitPattern=Pattern.compile("[a-zA-Z]+");
+        Pattern inputPattern=Pattern.compile("(\\d+)\\s*([a-zA-Z]+)");
         String[] iSpl=input.split(":");
         String name=iSpl[0];
         String samount=" ";
         String unit="";
-        Matcher amountMatcher=amountPattern.matcher(iSpl[1]);
-        Matcher unitMatcher=unitPattern.matcher(iSpl[1]);
+        Matcher inputMatcher=inputPattern.matcher(iSpl[1]);
 
-        if (amountMatcher.find(0)|unitMatcher.find(0)){
-            samount=amountMatcher.group();
-            unit=unitMatcher.group();
-        }
+        if (inputMatcher.find(0)){
+            samount=inputMatcher.group(1);
+            unit=inputMatcher.group(2);}
+
         //TODO: add case handling for different input styles i.e. input does not correspond to expected format
 
         try{
