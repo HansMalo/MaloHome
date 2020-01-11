@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity
             }
             Log.d("Button Click", "input String " + input);
             createItemFromInput(IngredList, input, mInputForm, mAdapter);
+            mInputForm.setText("");
         }
 
 
@@ -295,50 +296,52 @@ public class MainActivity extends AppCompatActivity
         String samount = " ";
         String unit = "";
         //TODO: input handling no amount given, now: amount=0
+        //should amount stay as float? no change of showing nothing if no input was given
         if(iSpl.length>1) {
             Matcher inputMatcher = inputPattern.matcher(iSpl[1]);
 
             if (inputMatcher.find(0)) {
                 samount = inputMatcher.group(1);
                 unit = inputMatcher.group(2);
-            }
-            //use unit as text output if no reasonable number was given
-            else{unit=iSpl[1];}
 
-            //is try necessary at this point?
-            try {
-                float famount = Float.parseFloat(samount);
-                mInputForm.setText("");
+                //is try necessary at this point?
+                try {
+                    float famount = Float.parseFloat(samount);
+                    mInputForm.setText("");
                 /*should work
                  Log.d("Button Click", "input String split: Name " + iSpl[0] +
                        ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
                 */
-                //COMPLETE: check if added Ingredient name is already in IngredList
-                for (int i = 0; i < List.size(); i++) {
-                    if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
-                        //Log.d("Button Click", "Entered dublicate Name Checker");
-                        float oldAmount = List.get(i).getAmount();
-                        List.get(i).setAmount(oldAmount + famount);
-                        mAdapter.notifyDataSetChanged();
-                        return;
+                    //COMPLETE: check if added Ingredient name is already in IngredList
+                    for (int i = 0; i < List.size(); i++) {
+                        if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
+                            //Log.d("Button Click", "Entered dublicate Name Checker");
+                            float oldAmount = List.get(i).getAmount();
+                            List.get(i).setAmount(oldAmount + famount);
+                            mAdapter.notifyDataSetChanged();
+                            return;
+                        }
                     }
+                    IngModel Ingred = new IngModel(name, famount, unit);
+                    IngredList.add(Ingred);
+
+
+                    mAdapter.notifyItemInserted(IngredList.size() - 1);
+                } catch (Exception e) {
+                    if (mToast != null) {
+                        mToast.cancel();
+                    }
+                    mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
+                    mToast.setGravity(Gravity.CENTER, 0, 0);
+
+                    mToast.show();
+                    return;
+
                 }
-                IngModel Ingred = new IngModel(name, famount, unit);
-                IngredList.add(Ingred);
-
-
-                mAdapter.notifyItemInserted(IngredList.size() - 1);
-            } catch (Exception e) {
-                if (mToast != null) {
-                    mToast.cancel();
-                }
-                mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
-                mToast.setGravity(Gravity.CENTER, 0, 0);
-
-                mToast.show();
-                return;
-
             }
+            //use unit as text output if no reasonable number was given
+            else{unit=iSpl[1];
+                            }
 
         }
         IngModel Ingred = new IngModel(name, 0, unit);
