@@ -341,12 +341,17 @@ public class MainActivity extends AppCompatActivity
             }
             //use unit as text output if no reasonable number was given
             else{unit=iSpl[1];
+                IngModel Ingred = new IngModel(name, 0, unit);
+                IngredList.add(Ingred);
+                mAdapter.notifyItemInserted(IngredList.size() - 1);
                             }
 
         }
-        IngModel Ingred = new IngModel(name, 0, unit);
-        IngredList.add(Ingred);
-        mAdapter.notifyItemInserted(IngredList.size() - 1);
+        else {
+            IngModel Ingred = new IngModel(name, 0, unit);
+            IngredList.add(Ingred);
+            mAdapter.notifyItemInserted(IngredList.size() - 1);
+        }
     }
 
 
