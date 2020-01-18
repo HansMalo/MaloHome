@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
         mIngredList.setLayoutManager(layoutManager);
         mAdapter=new IngredAdapter(IngredList, this, this);
         mIngredList.setAdapter((mAdapter));
-        //setting up remove List RecyclerView
+        //setting up remove List RecyclerViewaddBtnClick
         mRemIngredList= findViewById(R.id.rv_rmItemsContainer);
         LinearLayoutManager layoutManagerRemItem = new LinearLayoutManager(this);
         mRemIngredList.setLayoutManager(layoutManagerRemItem);
