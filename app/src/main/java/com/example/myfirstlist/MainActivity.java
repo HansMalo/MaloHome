@@ -264,7 +264,6 @@ public class MainActivity extends AppCompatActivity
 
         //TODO: add case handling for different input styles i.e. input does not correspond to expected format
 
-        try{
             mAddBtn.setText("ADD");
             mGetCBBtn.setText("CB");
             String[] iSpl=input.split(":");
@@ -278,14 +277,26 @@ public class MainActivity extends AppCompatActivity
                 if (inputMatcher.find(0)) {
                     samount = inputMatcher.group(1);
                     unit = inputMatcher.group(2);
+                    try{
+                        float famount=Float.parseFloat(samount);
+                    } catch (Exception e) {
+                        if (mToast != null) {
+                            mToast.cancel();
+                        }
+                        mToast = Toast.makeText(this, "amount is not a number, cannot calculate", Toast.LENGTH_SHORT);
+                        mToast.setGravity(Gravity.CENTER,0,0);
+
+                        mToast.show();
+                        e.printStackTrace();
+                    }
+
+
                 }
                 else{unit=iSpl[1];}
 
-
-                String famount = Float.parseFloat(samount);
                 mInputForm.setText("");
                 IngredList.get(clickedItemIndexint).setName(name);
-                IngredList.get(clickedItemIndexint).setAmount(famount);
+                IngredList.get(clickedItemIndexint).setAmount(samount);
                 IngredList.get(clickedItemIndexint).setUnit(unit);
                 mAdapter.notifyItemChanged(clickedItemIndexint);
             }
@@ -295,18 +306,11 @@ public class MainActivity extends AppCompatActivity
                 IngredList.get(clickedItemIndexint).setUnit(unit);
             }
 
-        }
-        catch (Exception e){
-            if (mToast != null) {
-                mToast.cancel();
-            }
-            mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
-            mToast.setGravity(Gravity.CENTER,0,0);
 
-            mToast.show();
-            return;
 
-        }
+
+
+
 
 
 
@@ -318,60 +322,52 @@ public class MainActivity extends AppCompatActivity
         String name=iSpl[0];
         String samount = " ";
         String unit = "";
-        //TODO: input handling no amount given, now: amount=0
-        //should amount stay as float? no change of showing nothing if no input was given
+        //maybe one "if" case can be omitted if regex inputPattern fits better to input
         if(iSpl.length>1) {
             Matcher inputMatcher = inputPattern.matcher(iSpl[1]);
 
             if (inputMatcher.find(0)) {
                 samount = inputMatcher.group(1);
                 unit = inputMatcher.group(2);
+                mInputForm.setText("");
 
-                //is try necessary at this point?
-                try {
-                    String famount = Float.parseFloat(samount);
-                    mInputForm.setText("");
-                /*should work
-                 Log.d("Button Click", "input String split: Name " + iSpl[0] +
-                       ", Amount " + iSpl[1] + ", Unit " + iSpl[2] );
-                */
+
                     //COMPLETE: check if added Ingredient name is already in IngredList
                     for (int i = 0; i < List.size(); i++) {
                         if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
-                            //Log.d("Button Click", "Entered dublicate Name Checker");
-                            String oldAmount = List.get(i).getAmount();
-                            List.get(i).setAmount(oldAmount + famount);
-                            mAdapter.notifyDataSetChanged();
-                            return;
+                            try {
+                                float famount = Float.parseFloat(samount);
+                                float oldAmount = Float.parseFloat(List.get(i).getAmount());
+                                DecimalFormat decimalFormat = new DecimalFormat("#.###");
+                                //Log.d("Button Click", "Entered dublicate Name Checker");
+                                List.get(i).setAmount(decimalFormat.format(oldAmount + famount));
+                                mAdapter.notifyDataSetChanged();
+                                return;
+                            } catch (NumberFormatException e) {
+                                if (mToast != null) {
+                                    mToast.cancel();
+                                }
+                                String toastMessage = "Item" + name + "has non number format of amount, cannot calculate";
+                                mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT);
+                                mToast.show();
+                                return;
+                            }
                         }
                     }
-                    IngModel Ingred = new IngModel(name, famount, unit);
+                    IngModel Ingred = new IngModel(name, samount, unit);
                     IngredList.add(Ingred);
-
-
                     mAdapter.notifyItemInserted(IngredList.size() - 1);
-                } catch (Exception e) {
-                    if (mToast != null) {
-                        mToast.cancel();
-                    }
-                    mToast = Toast.makeText(this, "please use the input pattern :)", Toast.LENGTH_SHORT);
-                    mToast.setGravity(Gravity.CENTER, 0, 0);
-
-                    mToast.show();
-                    return;
-
-                }
             }
             //use unit as text output if no reasonable number was given
             else{unit=iSpl[1];
-                IngModel Ingred = new IngModel(name, 0, unit);
+                IngModel Ingred = new IngModel(name, "", unit);
                 IngredList.add(Ingred);
                 mAdapter.notifyItemInserted(IngredList.size() - 1);
                             }
 
         }
         else {
-            IngModel Ingred = new IngModel(name, 0, unit);
+            IngModel Ingred = new IngModel(name, "", unit);
             IngredList.add(Ingred);
             mAdapter.notifyItemInserted(IngredList.size() - 1);
         }
@@ -380,7 +376,7 @@ public class MainActivity extends AppCompatActivity
 
     //initalize List
     private void initIngredListshrt(){
-        IngModel Ingred = new IngModel("Krass", 50, "g");
+        IngModel Ingred = new IngModel("Krass", "50", "g");
         IngredList.add(Ingred);
         mAdapter.notifyDataSetChanged();
     }
