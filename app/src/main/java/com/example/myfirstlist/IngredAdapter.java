@@ -102,8 +102,6 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
         holder.ingView.setText(builder);
     }
 
-
-
     /**
      * This method simply returns the number of items to display. It is used behind the scenes
      * to help layout our Views and for animations.
@@ -138,39 +136,6 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
             ingView.setOnClickListener(this);
             ingView.setOnLongClickListener(this);
         }
-
-        /*
-        public void setIngredient(IngModel mIngModel){
-            /*float Amount=mIngModel.getAmount();
-            String Unit=mIngModel.getUnit();
-            String Name=mIngModel.getName();
-            String Category=mIngModel.getCategory();
-            StringBuilder builder=new StringBuilder(mIngModel.getName());
-            builder.append(mIngModel.getAmount());
-            builder.append(mIngModel.getUnit());
-            ingView.setText(builder);
-
-
-
-        } */
-
-        /*
-         * A method we wrote for convenience. This method will take an integer as input and
-         * use that integer to display the appropriate text within a list item.
-         * @param listIndex Position of the item in the list
-         *
-         */
-
-        void bind(int listIndex) {
-            ingView.setText(String.valueOf(listIndex));
-        }
-
-
-        // COMPLETED (6) Override onClick, passing the clicked item's position (getAdapterPosition()) to mOnClickListener via its onListItemClick method
-        /**
-         * Called whenever a user clicks on an item in the list.
-         * @param v The View that was clicked
-         */
 
         @Override
         public void onClick(View v) {

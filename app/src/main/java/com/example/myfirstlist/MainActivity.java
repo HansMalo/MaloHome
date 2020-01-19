@@ -204,13 +204,13 @@ public class MainActivity extends AppCompatActivity
                 if (inputMatcher.find(0)){
                     samount=inputMatcher.group(1);
                     unit=inputMatcher.group(2);}
-                float amount=0;
+                String amount=0;
                 try {
                     amount = Float.parseFloat(samount);
                     for (int i = 0; i < IngredList.size(); i++) {
                         if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
                             //Log.d("Button Click", "Entered dublicate Name Checker");
-                            float oldAmount = IngredList.get(i).getAmount();
+                            String oldAmount = IngredList.get(i).getAmount();
                             IngredList.get(i).setAmount(oldAmount + amount);
                             mAdapter.notifyDataSetChanged();
                             isInList = true;
@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity
                 else{unit=iSpl[1];}
 
 
-                float famount = Float.parseFloat(samount);
+                String famount = Float.parseFloat(samount);
                 mInputForm.setText("");
                 IngredList.get(clickedItemIndexint).setName(name);
                 IngredList.get(clickedItemIndexint).setAmount(famount);
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity
 
                 //is try necessary at this point?
                 try {
-                    float famount = Float.parseFloat(samount);
+                    String famount = Float.parseFloat(samount);
                     mInputForm.setText("");
                 /*should work
                  Log.d("Button Click", "input String split: Name " + iSpl[0] +
@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity
                     for (int i = 0; i < List.size(); i++) {
                         if (iSpl[0].equalsIgnoreCase(List.get(i).getName())) {
                             //Log.d("Button Click", "Entered dublicate Name Checker");
-                            float oldAmount = List.get(i).getAmount();
+                            String oldAmount = List.get(i).getAmount();
                             List.get(i).setAmount(oldAmount + famount);
                             mAdapter.notifyDataSetChanged();
                             return;

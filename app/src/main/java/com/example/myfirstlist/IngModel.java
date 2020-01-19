@@ -3,18 +3,18 @@ package com.example.myfirstlist;
 public class IngModel {
     private String Name;
     private String Unit;
-    private float Amount;
+    private String Amount;
     private String Category;
 
 
-    public IngModel(String name, float amount, String unit) {
+    public IngModel(String name, String amount, String unit) {
         Name = name;
         Unit = unit;
         Amount = amount;
         Category="None";
     }
 
-    public IngModel(String name, float amount, String unit, String category) {
+    public IngModel(String name, String amount, String unit, String category) {
         Name = name;
         Unit = unit;
         Amount = amount;
@@ -29,7 +29,7 @@ public class IngModel {
         return Unit;
     }
 
-    public float getAmount() {
+    public String getAmount() {
         return Amount;
     }
 
@@ -41,7 +41,7 @@ public class IngModel {
         this.Unit = unit;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(String amount) {
         this.Amount = amount;
     }
 
