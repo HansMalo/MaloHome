@@ -268,9 +268,11 @@ public class MainActivity extends AppCompatActivity
                 IngredList.get(clickedItemIndexint).setUnit(unit);
                 mAdapter.notifyItemChanged(clickedItemIndexint);
             }
-            IngredList.get(clickedItemIndexint).setName(name);
-            IngredList.get(clickedItemIndexint).setAmount(0);
-            IngredList.get(clickedItemIndexint).setUnit(unit);
+            else {
+                IngredList.get(clickedItemIndexint).setName(name);
+                IngredList.get(clickedItemIndexint).setAmount(0);
+                IngredList.get(clickedItemIndexint).setUnit(unit);
+            }
 
         }
         catch (Exception e){
