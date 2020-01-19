@@ -20,6 +20,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Whitelist;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity
 
         mAdapter=new IngredAdapter(IngredList, this, this);
         mIngredList.setAdapter((mAdapter));
-        //initialize IngredList
+        //legacy from debugging: initialize IngredList
         //initIngredListshrt();
         }
 
@@ -106,10 +107,14 @@ public class MainActivity extends AppCompatActivity
          *
          *                     Item #42 clicked.
          */
+
+        //legacy from tutorial
+        /*
         String toastMessage = "Item #" + clickedItemIndex + " clicked and removed.";
         mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT);
 
         mToast.show();
+        */
 
     }
 
@@ -165,7 +170,6 @@ public class MainActivity extends AppCompatActivity
                 mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT);
 
                 mToast.show();
-                return;
             }
 
             //do nothing
@@ -177,8 +181,9 @@ public class MainActivity extends AppCompatActivity
             //Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
             //Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
             // This disables the paste menu item, since the clipboard has data but it is not plain text
-            return;
-        } else {
+        } else if (
+                (clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))|
+                        (clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))){
             Document.OutputSettings settings = new Document.OutputSettings();
             //setting prettyprint false to keep \n and other formating chars
             settings.prettyPrint(false);
@@ -193,41 +198,58 @@ public class MainActivity extends AppCompatActivity
             for (int k = 0; k < allcb.length; k++) {
                 isInList=false;
                 //most recipe lists from websites are seperated by \t between ingredient and amount unit
-                String[] input = allcb[k].split("\t");
-                String name = input[1];
                 //Complete: better input handling here
                 Pattern inputPattern=Pattern.compile("(\\d+\\.*\\d*)\\s*([a-zA-Z]*)");
                 String samount=" ";
                 String unit="";
-                Matcher inputMatcher=inputPattern.matcher(input[0]);
+                String name="";
+                try {
+                    String[] input = allcb[k].split("\t");
+                    name = input[1];
+                    Matcher inputMatcher=inputPattern.matcher(input[0]);
 
                 if (inputMatcher.find(0)){
                     samount=inputMatcher.group(1);
                     unit=inputMatcher.group(2);}
-                String amount=0;
-                try {
-                    amount = Float.parseFloat(samount);
-                    for (int i = 0; i < IngredList.size(); i++) {
-                        if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
-                            //Log.d("Button Click", "Entered dublicate Name Checker");
-                            String oldAmount = IngredList.get(i).getAmount();
-                            IngredList.get(i).setAmount(oldAmount + amount);
-                            mAdapter.notifyDataSetChanged();
-                            isInList = true;
-                            i = IngredList.size();
+                DecimalFormat decimalFormat=new DecimalFormat("#.###");
+                float famount=0;
+                float fOldAmount=0;
+
+                    try {
+                        famount = Float.parseFloat(samount);
+                        for (int i = 0; i < IngredList.size(); i++) {
+                            if (name.equalsIgnoreCase(IngredList.get(i).getName())) {
+                                //Log.d("Button Click", "Entered dublicate Name Checker");
+                                String oldAmount = IngredList.get(i).getAmount();
+                                fOldAmount = Float.parseFloat(oldAmount);
+                                String newAmount = decimalFormat.format(fOldAmount + famount);
+                                IngredList.get(i).setAmount(newAmount);
+                                mAdapter.notifyDataSetChanged();
+                                isInList = true;
+                                i = IngredList.size();
+                            }
                         }
+                    } catch (NumberFormatException e) {
+                        samount=inputMatcher.group(1);
+                        if (mToast != null) {
+                            mToast.cancel();
+                        }
+                        String toastMessage = "Item" + name + "has non number format of amount, cannot calculate";
+                        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT);
+                        mToast.show();
                     }
                 }
                 catch (Exception e){
                     //TODO: proper exception handling for non float characters in Clipboard copy past routine
-                    amount=0;
+                    name="";
+                    samount="";
+                    unit="";
+
                 }
                 if (!isInList) {
-                    IngModel Ingred = new IngModel(name, amount, unit);
+                    IngModel Ingred = new IngModel(name, samount, unit);
                     IngredList.add(Ingred);
                     mAdapter.notifyItemInserted(IngredList.size() - 1);
-                    ;
-                    //mAdapter.notifyItemChanged(IngredList.size());
                 }
 
             }
@@ -236,8 +258,7 @@ public class MainActivity extends AppCompatActivity
             //Log.d("DataFromClipboard","receiveDatafrom CB performed \n" + cb);
             //Log.d("DataFromClipboard","receiveDatafrom newCB performed \n" + allcb[1]+allcb[2]);
 
-            return;
-        }
+            }
     }
     public void editItemFromInput(ArrayList <IngModel> List, String input, EditText mInputForm, IngredAdapter mAdapter ){
 
@@ -270,7 +291,7 @@ public class MainActivity extends AppCompatActivity
             }
             else {
                 IngredList.get(clickedItemIndexint).setName(name);
-                IngredList.get(clickedItemIndexint).setAmount(0);
+                IngredList.get(clickedItemIndexint).setAmount("");
                 IngredList.get(clickedItemIndexint).setUnit(unit);
             }
 
