@@ -10,14 +10,15 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemItemsViewHolder>{
 
-    private List<IngModel> mIngredList;
+    private ArrayList<IngModel> mIngredList;
     //onClickListener to make it easy for Activity to interface with RecyclerView
     //remove item on click
-    final private RemItemsAdapter.ListItemClickListener mOnClickListener;
+    final private remListItemClickListener mOnClickListener;
     //onLongClickListener same as clicklistener, for Item editing
 
     private static int viewHolderCount;
@@ -26,8 +27,8 @@ public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemIte
     //private int mNumberItems;
 //interface for onListItemClick handling
 
-    public interface ListItemClickListener {
-        void onListItemClick(int clickedItemIndex);
+    public interface remListItemClickListener {
+        void onRemListItemClick(int clickedItemIndex);
     }
 
 
@@ -35,7 +36,7 @@ public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemIte
      * for the ListItemClickListener.
      * @param List<IngModel> List with IngredientsModel objects as described in the IngModel class
      * @param listener Listener for list item clicks */
-    public RemItemsAdapter(List<IngModel> IngredList, RemItemsAdapter.ListItemClickListener listener) {
+    public RemItemsAdapter(ArrayList<IngModel> IngredList, RemItemsAdapter.remListItemClickListener listener) {
         this.mIngredList=IngredList;
         mOnClickListener=listener;
         viewHolderCount=0;
@@ -56,17 +57,15 @@ public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemIte
 
 
     @Override
-    public RemItemsAdapter.RemItemsViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public RemItemsViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         Context context=parent.getContext();
         int layoutIdForListItem=R.layout.ing_list_item;
         LayoutInflater inflater=LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
         View itemView = inflater.inflate(R.layout.ing_list_item, parent,shouldAttachToParentImmediately);
-        RemItemsAdapter.RemItemsViewHolder viewHolder=new RemItemsAdapter(itemView);
+        RemItemsViewHolder viewHolder=new RemItemsViewHolder(itemView);
         viewHolderCount++;
-        Log.d(TAG, "onCreateViewHolder: number of ViewHolders created: "
-                + viewHolderCount);
         return viewHolder;
 
     }
@@ -84,7 +83,6 @@ public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemIte
 
     @Override
     public void onBindViewHolder(RemItemsAdapter.RemItemsViewHolder holder, int position) {
-        Log.d(TAG, "#" + position);
         String spc=" ";
         StringBuilder builder=new StringBuilder(mIngredList.get(position).getName());
         builder.append(spc);
@@ -139,7 +137,7 @@ public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemIte
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(clickedPosition);
+            mOnClickListener.onRemListItemClick(clickedPosition);
         }
 
 

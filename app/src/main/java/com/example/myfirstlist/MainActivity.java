@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
-        implements IngredAdapter.ListItemClickListener,IngredAdapter.ListItemLongClickListener,RemItemsAdapter.ListItemClickListener{
+        implements IngredAdapter.ListItemClickListener,IngredAdapter.ListItemLongClickListener,RemItemsAdapter.remListItemClickListener{
     private IngredAdapter mAdapter;
     private RecyclerView mIngredList;
     private RecyclerView mRemIngredList;
@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity
         mRemIngredList= findViewById(R.id.rv_rmItemsContainer);
         LinearLayoutManager layoutManagerRemItem = new LinearLayoutManager(this);
         mRemIngredList.setLayoutManager(layoutManagerRemItem);
-        mRemItemsAdapter=new RemItemsAdapter(remIngredList, this, this);
-        mRemIngredList.setAdapter((mAdapter));
+        mRemItemsAdapter=new RemItemsAdapter(remIngredList, this);
+        mRemIngredList.setAdapter((mRemItemsAdapter));
 
 
 
@@ -103,8 +103,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onListItemClick(int clickedItemIndex) {
         Log.d("onListItemClick", "IngredList Length before removal: " + IngredList.size());
+        remIngredList.add(0,IngredList.get(clickedItemIndex));
         IngredList.remove(clickedItemIndex);
         mAdapter.notifyItemRemoved(clickedItemIndex);
+        mRemItemsAdapter.notifyItemInserted(0);
         Log.d("onListItemClick", "IngredList Length after removal: " + IngredList.size());
 
         if (mToast != null) {
@@ -123,6 +125,15 @@ public class MainActivity extends AppCompatActivity
 
         mToast.show();
 
+    }
+
+    @Override
+    public void onRemListItemClick(int clickedItemIndex){
+        IngredList.add(0,remIngredList.get(clickedItemIndex));
+        remIngredList.remove(clickedItemIndex);
+        mRemItemsAdapter.notifyItemRemoved(clickedItemIndex);
+        mAdapter.notifyItemInserted(0);
+        mAdapter.notifyDataSetChanged();
     }
 
     public void addBtnClick(View v) {

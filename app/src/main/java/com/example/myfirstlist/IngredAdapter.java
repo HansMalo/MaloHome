@@ -19,7 +19,7 @@ import java.util.List;
 public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredViewHolder>{
 
     private static final String TAG = IngredAdapter.class.getSimpleName();
-    private List<IngModel> mIngredList;
+    private ArrayList<IngModel> mIngredList;
     //onClickListener to make it easy for Activity to interface with RecyclerView
     //remove item on click
     final private ListItemClickListener mOnClickListener;
@@ -43,7 +43,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
      * for the ListItemClickListener.
      * @param List<IngModel> List with IngredientsModel objects as described in the IngModel class
      * @param listener Listener for list item clicks */
-    public IngredAdapter(List<IngModel> IngredList, ListItemClickListener listener, ListItemLongClickListener longListener) {
+    public IngredAdapter(ArrayList<IngModel> IngredList, ListItemClickListener listener, ListItemLongClickListener longListener) {
         this.mIngredList=IngredList;
         mOnClickListener=listener;
         mOnClickLongListener=longListener;
