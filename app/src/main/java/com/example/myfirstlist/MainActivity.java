@@ -173,15 +173,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             //do nothing
-        } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
-            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-            String cb = item.getText().toString();
-            String newcb = Jsoup.clean(cb, Whitelist.none());
-
-            //Log.d("DataFromClipboard","receiveDatafrom no plaintext "+ cb);
-            //Log.d("DataFromClipboard","receiveDatafrom afterparsing "+ newcb);
-            // This disables the paste menu item, since the clipboard has data but it is not plain text
-        } else if (
+        }  else if (
                 (clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))|
                         (clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))){
             Document.OutputSettings settings = new Document.OutputSettings();

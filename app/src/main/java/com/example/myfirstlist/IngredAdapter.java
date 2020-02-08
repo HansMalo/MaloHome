@@ -97,7 +97,7 @@ public class IngredAdapter extends RecyclerView.Adapter<IngredAdapter.IngredView
         String spc=" ";
         StringBuilder builder=new StringBuilder(mIngredList.get(position).getName());
         builder.append(spc);
-        builder.append(decimalFormat.format(mIngredList.get(position).getAmount()));
+        builder.append(mIngredList.get(position).getAmount());
         builder.append(mIngredList.get(position).getUnit());
         holder.ingView.setText(builder);
     }
