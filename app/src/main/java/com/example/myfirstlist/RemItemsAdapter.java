@@ -86,7 +86,7 @@ public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemIte
         String spc=" ";
         StringBuilder builder=new StringBuilder(mIngredList.get(position).getName());
         builder.append(spc);
-        builder.append(decimalFormat.format(mIngredList.get(position).getAmount()));
+        builder.append(mIngredList.get(position).getAmount());
         builder.append(mIngredList.get(position).getUnit());
         holder.ingView.setText(builder);
     }
@@ -123,7 +123,7 @@ public class RemItemsAdapter extends RecyclerView.Adapter<RemItemsAdapter.RemIte
 
         public RemItemsViewHolder (View view){
             super(view);
-            ingView=(TextView) view.findViewById(R.id.ingView);
+            ingView=view.findViewById(R.id.ingView);
             ingView.setOnClickListener(this);
         }
 
